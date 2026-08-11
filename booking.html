@@ -631,7 +631,7 @@
                 <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 15px;" data-i18n="qr_subheading">เมื่อโอนเงินแล้ว โปรดแนบสลิปเพื่อส่งหลักฐานการจองเข้าสู่อีเมลและแจ้งเตือนผ่าน LINE อัตโนมัติ</p>
                 
                 <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=BankTaxiServicePromptPay100THB" alt="Payment QR Code">
+                    <img src="https://cdn.discordapp.com/attachments/1519030341564764331/1536861642522890381/IMG_0419.jpg?ex=6a7cf171&is=6a7b9ff1&hm=a4b110f14e42639e5bdac42096ac600677f1d3988b79ca88a1bd64bba4396b92&" alt="Payment QR Code">
                 </div>
                 <p style="font-weight: 700; color: var(--primary); margin: 5px 0;" data-i18n="bank_name">Bank Taxi Service (PromptPay)</p>
 
@@ -671,9 +671,33 @@
             <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 10px;">&copy; 2026 Bank Taxi Service. All Rights Reserved.</p>
         </div>
     </footer>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init("YOUR_PUBLIC_KEY"); // 🔑 นำ Public Key ของคุณมาใส่ตรงนี้ (ดูได้ที่ Account -> API Keys ใน EmailJS)
+   })();
+</script>
+   <!-- Script สำหรับคำนวณราคา, ระบบภาษา และ Firebase -->
+    <script type="module">
+        // 1. นำเข้า Firebase SDK ที่จำเป็น
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-    <!-- Script สำหรับคำนวณราคาและระบบภาษา -->
-    <script>
+        // ตั้งค่า Firebase ของคุณ
+        const firebaseConfig = {
+            apiKey: "AIzaSyASv5AeTc3XJjiLvvU9ca7sE27901Zt9aU",
+            authDomain: "bank-taxi-service.firebaseapp.com",
+            projectId: "bank-taxi-service",
+            storageBucket: "bank-taxi-service.firebasestorage.app",
+            messagingSenderId: "128363247344",
+            appId: "1:128363247344:web:ab2255c4ca38beda763435",
+            measurementId: "G-N2LDVWQ57M"
+        };
+
+        // เริ่มต้นใช้งาน Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         const translations = {
             th: {
                 home: "Home",
@@ -753,6 +777,7 @@
                 btn.classList.toggle('active', btn.dataset.lang === lang);
             });
         }
+        window.setLanguage = setLanguage;
 
         document.addEventListener("DOMContentLoaded", () => {
             const savedLang = localStorage.getItem('selectedLang') || 'th';
@@ -815,6 +840,7 @@
             }
             priceDisplay.textContent = "0 บาท / THB";
         }
+        window.updateRoutesAndPrice = updateRoutesAndPrice;
 
         function calculatePrice() {
             const routeSelect = document.getElementById('route');
@@ -827,6 +853,7 @@
                 priceDisplay.textContent = "0 บาท / THB";
             }
         }
+        window.calculatePrice = calculatePrice;
 
         function handleBookingSubmission(event) {
             event.preventDefault();
@@ -857,6 +884,7 @@
             document.getElementById('payment-section').style.display = 'block';
             document.getElementById('payment-section').scrollIntoView({ behavior: 'smooth' });
         }
+        window.handleBookingSubmission = handleBookingSubmission;
 
         function previewSlip(event) {
             const file = event.target.files[0];
@@ -864,21 +892,79 @@
                 console.log("Uploaded slip:", file.name);
             }
         }
+        window.previewSlip = previewSlip;
 
-        function finalizeBooking() {
-            const slipInput = document.getElementById('slip');
-            const lineid = document.getElementById('lineid').value;
-            const email = document.getElementById('email').value;
+        // 2. ปรับปรุงฟังก์ชันบันทึกข้อมูลลง Cloud Firestore จริงๆ เมื่อผู้ใช้กดยืนยันขั้นตอนสุดท้าย
+       async function finalizeBooking() {
+    const slipInput = document.getElementById('slip');
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
+    const lineid = document.getElementById('lineid').value;
+    const email = document.getElementById('email').value;
+    const car = document.getElementById('car').value;
+    const routeText = document.getElementById('route').options[document.getElementById('route').selectedIndex].text;
+    const priceValue = document.getElementById('route').value;
+    const notes = document.getElementById('notes').value;
 
-            if (slipInput.files.length === 0) {
-                alert('กรุณาแนบสลิปหลักฐานการโอนเงิน / Please attach the slip.');
-                return;
-            }
+    if (slipInput.files.length === 0) {
+        alert('กรุณาแนบสลิปหลักฐานการโอนเงิน / Please attach the slip.');
+        return;
+    }
 
-            alert(`ส่งหลักฐานการจองสำเร็จ!\n- แจ้งเตือนเข้า LINE แอดมินเรียบร้อย\n- ส่งอีเมลไปที่: ${email}\n- ติดต่อทาง LINE ID: ${lineid}\n\nขอบคุณที่ใช้บริการครับ!`);
-            location.reload();
-        }
+    const file = slipInput.files[0];
 
+    // แปลงไฟล์รูปภาพเป็น Base64 String เพื่อเก็บลง Firestore โดยตรง (ไม่ต้องใช้ Storage)
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    
+    reader.onload = async function () {
+        const base64Slip = reader.result;
+
+        try {
+    const docRef = await addDoc(collection(db, "bookings"), {
+        name: name,
+        phone: phone,
+        lineid: lineid,
+        email: email,
+        carType: car,
+        route: routeText,
+        price: Number(priceValue),
+        notes: notes,
+        deposit: 100,
+        slipBase64: base64Slip,
+        status: "pending",
+        createdAt: new Date()
+    });
+
+    // ✉️ เพิ่มคำสั่งส่งอีเมลอัตโนมัติผ่าน EmailJS ตรงนี้
+    const templateParams = {
+        to_name: name,
+        to_email: email,
+        phone: phone,
+        car_type: car,
+        route: routeText,
+        price: Number(priceValue).toLocaleString() + " THB",
+        booking_id: docRef.id
+    };
+
+    // แทนที่ด้วย Service ID และ Template ID ของคุณ
+    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+        .then(() => {
+            console.log('Email sent successfully!');
+        }, (error) => {
+            console.error('Email failed...', error);
+        });
+
+    alert(`Booking submitted successfully!\n- Booking ID: ${docRef.id}\n- Email confirmation sent!\n\nThank you for using Bank Taxi Service!`);
+    location.reload();
+
+} catch (e) {
+    console.error("Error adding document: ", e);
+    alert("Error saving data. Please try again.");
+}
+    };
+}
+window.finalizeBooking = finalizeBooking;
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const carParam = urlParams.get('car');
@@ -888,5 +974,8 @@
             }
         });
     </script>
+    <!-- EmailJS SDK -->
+
+    
 </body>
 </html>

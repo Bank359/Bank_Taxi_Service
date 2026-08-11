@@ -524,8 +524,8 @@
         <div class="header-wrapper">
             <!-- Language Switcher -->
             <div class="language-switcher-top">
-                <a href="booking.html" class="lang-btn">TH</a>
-                <a href="booking-en.html" class="lang-btn active">EN</a>
+                <button type="button" class="lang-btn" data-lang="th" onclick="setLanguage('th')">TH</button>
+                <button type="button" class="lang-btn active" data-lang="en" onclick="setLanguage('en')">EN</button>
             </div>
 
             <div class="header-container">
@@ -617,8 +617,8 @@
                 <h3 style="color: var(--primary); margin-top: 0;"><i class="fa-solid fa-qrcode"></i> <span data-i18n="qr_heading">Please Scan QR Code to Pay 100 THB Deposit</span></h3>
                 <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 15px;" data-i18n="qr_subheading">After transferring, please attach your transfer slip below to send booking details to your email and LINE automatically.</p>
                 
-                <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=BankTaxiServicePromptPay100THB" alt="Payment QR Code">
+                 <div class="qr-container">
+                    <img src="https://cdn.discordapp.com/attachments/1519030341564764331/1536861642522890381/IMG_0419.jpg?ex=6a7cf171&is=6a7b9ff1&hm=a4b110f14e42639e5bdac42096ac600677f1d3988b79ca88a1bd64bba4396b92&" alt="Payment QR Code">
                 </div>
                 <p style="font-weight: 700; color: var(--primary); margin: 5px 0;" data-i18n="bank_name">Bank Taxi Service (PromptPay)</p>
 
@@ -658,9 +658,30 @@
             <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 10px;">&copy; 2026 Bank Taxi Service. All Rights Reserved.</p>
         </div>
     </footer>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init("YOUR_PUBLIC_KEY"); // 🔑 นำ Public Key ของคุณมาใส่ตรงนี้ (ดูได้ที่ Account -> API Keys ใน EmailJS)
+   })();
+</script>
+    <!-- Script สำหรับคำนวณราคา, ระบบภาษา และ Firebase (ใช้ Base64 ฟรีถาวร) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-    <!-- Script สำหรับคำนวณราคาและระบบภาษา -->
-    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyASv5AeTc3XJjiLvvU9ca7sE27901Zt9aU",
+            authDomain: "bank-taxi-service.firebaseapp.com",
+            projectId: "bank-taxi-service",
+            storageBucket: "bank-taxi-service.firebasestorage.app",
+            messagingSenderId: "128363247344",
+            appId: "1:128363247344:web:ab2255c4ca38beda763435",
+            measurementId: "G-N2LDVWQ57M"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         const translations = {
             th: {
                 home: "Home",
@@ -737,10 +758,10 @@
                 }
             });
             document.querySelectorAll('.lang-btn').forEach(btn => {
-                const isMatch = btn.dataset.lang === lang || (lang === 'en' && btn.textContent.trim() === 'EN') || (lang === 'th' && btn.textContent.trim() === 'TH');
-                btn.classList.toggle('active', isMatch);
+                btn.classList.toggle('active', btn.dataset.lang === lang);
             });
         }
+        window.setLanguage = setLanguage;
 
         document.addEventListener("DOMContentLoaded", () => {
             const savedLang = localStorage.getItem('selectedLang') || 'en';
@@ -803,6 +824,7 @@
             }
             priceDisplay.textContent = "0 THB";
         }
+        window.updateRoutesAndPrice = updateRoutesAndPrice;
 
         function calculatePrice() {
             const routeSelect = document.getElementById('route');
@@ -815,6 +837,7 @@
                 priceDisplay.textContent = "0 THB";
             }
         }
+        window.calculatePrice = calculatePrice;
 
         function handleBookingSubmission(event) {
             event.preventDefault();
@@ -830,21 +853,22 @@
 
             const summaryBox = document.getElementById('booking-summary-box');
             summaryBox.innerHTML = `
-                <h4 style="margin: 0 0 10px 0; color: var(--primary);"><i class="fa-solid fa-address-card"></i> Booking Confirmation Card</h4>
+                <h4 style="margin: 0 0 10px 0; color: var(--primary);"><i class="fa-solid fa-address-card"></i> Booking Confirmation</h4>
                 <p style="margin: 4px 0;"><strong>Full Name:</strong> ${name}</p>
-                <p style="margin: 4px 0;"><strong>Phone Number:</strong> ${phone}</p>
+                <p style="margin: 4px 0;"><strong>Phone:</strong> ${phone}</p>
                 <p style="margin: 4px 0;"><strong>LINE ID:</strong> ${lineid}</p>
-                <p style="margin: 4px 0;"><strong>Email (E-Slip):</strong> ${email}</p>
+                <p style="margin: 4px 0;"><strong>Email:</strong> ${email}</p>
                 <p style="margin: 4px 0;"><strong>Vehicle:</strong> ${car}</p>
                 <p style="margin: 4px 0;"><strong>Route:</strong> ${route}</p>
                 <p style="margin: 4px 0;"><strong>Total Fare:</strong> ${price}</p>
-                <p style="margin: 4px 0;"><strong>Deposit Paid via QR:</strong> <span style="color: #e11d48; font-weight: 700;">100 THB</span></p>
+                <p style="margin: 4px 0;"><strong>Deposit:</strong> <span style="color: #e11d48; font-weight: 700;">100 THB</span></p>
                 <p style="margin: 4px 0;"><strong>Notes:</strong> ${notes}</p>
             `;
 
             document.getElementById('payment-section').style.display = 'block';
             document.getElementById('payment-section').scrollIntoView({ behavior: 'smooth' });
         }
+        window.handleBookingSubmission = handleBookingSubmission;
 
         function previewSlip(event) {
             const file = event.target.files[0];
@@ -852,20 +876,95 @@
                 console.log("Uploaded slip:", file.name);
             }
         }
+        window.previewSlip = previewSlip;
 
-        function finalizeBooking() {
+        async function finalizeBooking() {
             const slipInput = document.getElementById('slip');
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
             const lineid = document.getElementById('lineid').value;
             const email = document.getElementById('email').value;
+            const car = document.getElementById('car').value;
+            const routeText = document.getElementById('route').options[document.getElementById('route').selectedIndex].text;
+            const priceValue = document.getElementById('route').value;
+            const notes = document.getElementById('notes').value;
 
             if (slipInput.files.length === 0) {
-                alert('Please attach the 100 THB deposit transfer slip before confirming.');
+                alert('Please attach the transfer slip. / กรุณาแนบสลิปหลักฐานการโอนเงิน');
                 return;
             }
 
-            alert(`Booking proof submitted successfully!\n- Details and slip sent to admin LINE successfully.\n- Confirmation summary emailed to: ${email}\n- Will contact via LINE ID: ${lineid}\n\nThank you for using Bank Taxi Service!`);
-            location.reload();
+            const file = slipInput.files[0];
+
+            // 🛠️ ระบบย่อขนาดรูปภาพอัตโนมัติก่อนแปลงเป็น Base64 เพื่อป้องกันข้อมูลเกิน 1MB ของ Firestore
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            
+            reader.onload = function (event) {
+                const img = new Image();
+                img.src = event.target.result;
+                
+                img.onload = async function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // กำหนดความกว้างสูงสุดไม่เกิน 800px เพื่อลดขนาดไฟล์
+                    const MAX_WIDTH = 800;
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    // บีบอัดเป็นไฟล์ JPEG คุณภาพ 0.7 (ขนาดจะลดลงเหลือเพียงไม่กี่ร้อย KB)
+                    const base64Slip = canvas.toDataURL('image/jpeg', 0.7);
+
+                    try {
+    const docRef = await addDoc(collection(db, "bookings"), {
+        name: name,
+        phone: phone,
+        lineid: lineid,
+        email: email,
+        carType: car,
+        route: routeText,
+        price: Number(priceValue),
+        notes: notes,
+        deposit: 100,
+        slipBase64: base64Slip,
+        status: "pending",
+        createdAt: new Date()
+    });
+
+    // ✉️ เพิ่มคำสั่งส่งอีเมลอัตโนมัติผ่าน EmailJS ตรงนี้
+    const templateParams = {
+        to_name: name,
+        to_email: email,
+        phone: phone,
+        car_type: car,
+        route: routeText,
+        price: Number(priceValue).toLocaleString() + " THB",
+        booking_id: docRef.id
+    };
+
+    // แทนที่ด้วย Service ID และ Template ID ของคุณ
+    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+        .then(() => {
+            console.log('Email sent successfully!');
+        }, (error) => {
+            console.error('Email failed...', error);
+        });
+
+    alert(`Booking submitted successfully!\n- Booking ID: ${docRef.id}\n- Email confirmation sent!\n\nThank you for using Bank Taxi Service!`);
+    location.reload();
+
+} catch (e) {
+    console.error("Error adding document: ", e);
+    alert("Error saving data. Please try again.");
+}
+                };
+            };
         }
+        window.finalizeBooking = finalizeBooking;
 
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -876,5 +975,7 @@
             }
         });
     </script>
+    <!-- EmailJS SDK -->
+
 </body>
 </html>
