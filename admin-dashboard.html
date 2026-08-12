@@ -564,16 +564,38 @@
   }
 
   // 3. ฟังก์ชันอัปเดตสถานะบน Cloud
-  window.updateCloudStatus = async function(docId, newStatus) {
-      try {
-          const docRef = doc(db, "bookings", docId);
-          await updateDoc(docRef, { status: newStatus });
-          alert('อัปเดตสถานะสำเร็จ!');
-      } catch (e) {
-          console.error("Error updating status: ", e);
-          alert('ไม่สามารถอัปเดตสถานะได้');
-      }
-  };
+ window.updateCloudStatus = async function(docId, newStatus) {
+    try {
+        const docRef = doc(db, "bookings", docId);
+        
+        // 1. อัปเดตสถานะลง Firestore ก่อน
+        await updateDoc(docRef, { status: newStatus });
+
+        // 2. ถ้าแอดมินเปลี่ยนสถานะเป็น "ยืนยันการจอง" (confirmed) ให้ส่งเมลหาลูกค้าอัตโนมัติ
+        if (newStatus === 'confirmed') {
+            // ดึงข้อมูลเอกสารนั้นมาเพื่อเอาชื่อและอีเมลของลูกค้า
+            // (หรือถ้าในฟังก์ชันมีข้อมูลลูกค้ารวมอยู่แล้ว สามารถดึงมาใช้ได้เลย)
+            
+            const templateParams = {
+                to_name: "คุณลูกค้า", // หรือดึงชื่อจริงจากข้อมูลในตาราง
+                to_email: "อีเมลลูกค้า", // ดึงอีเมลจริงจากข้อมูลในตาราง
+                phone: "-",
+                car_type: "-",
+                route: "-",
+                price: "-",
+                booking_id: docId
+            };
+
+            await emailjs.send('service_bwg87un', 'YOUR_TEMPLATE_ID', templateParams);
+            console.log('Confirmation email sent to customer successfully!');
+        }
+
+        alert('อัปเดตสถานะและส่งอีเมลยืนยันสำเร็จ!');
+    } catch (e) {
+        console.error("Error updating status: ", e);
+        alert('ไม่สามารถอัปเดตสถานะได้');
+    }
+};
 
   // 4. ฟังก์ชันลบข้อมูลบน Cloud
   window.deleteCloudBooking = async function(docId) {
@@ -594,46 +616,160 @@
       loadAdminBookings();
   });
 </script>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
-  // 👉 1. เพิ่มการ Import ฟังก์ชันของ Firestore เข้ามาด้วย
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+<!-- เรียกใช้งาน Firebase SDK และ EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          emailjs.init("TLr-PYAljdYhpJqk9"); // Public Key ของคุณ
+       })();
+    </script>
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyASv5AeTc3XJjiLvvU9ca7sE27901Zt9aU",
-    authDomain: "bank-taxi-service.firebaseapp.com",
-    projectId: "bank-taxi-service",
-    storageBucket: "bank-taxi-service.firebasestorage.app",
-    messagingSenderId: "128363247344",
-    appId: "1:128363247344:web:ab2255c4ca38beda763435",
-    measurementId: "G-N2LDVWQ57M"
-  };
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  
-  // 👉 2. เริ่มต้นใช้งาน Firestore
-  const db = getFirestore(app);
+        const firebaseConfig = {
+            apiKey: "AIzaSyASv5AeTc3XJjILvvU9ca7sE27901Zt9aU",
+            authDomain: "bank-taxi-service.firebaseapp.com",
+            projectId: "bank-taxi-service",
+            storageBucket: "bank-taxi-service.appspot.com",
+            messagingSenderId: "12836327344",
+            appId: "1:12836327344:web:ab2255c4ca38beda763435",
+            measurementId: "G-N2LDVWQ57M"
+        };
 
-  // 👉 3. ตัวอย่างฟังก์ชันสำหรับดึงข้อมูลจาก Collection "bookings" มาแสดงผล
-  async function loadBookings() {
-    try {
-      const querySnapshot = await getDocs(collection(db, "bookings"));
-      querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} =>`, doc.data());
-        // นำข้อมูลไปแสดงผลในตารางหรือหน้า HTML ของคุณตรงนี้ได้เลยครับ
-      });
-    } catch (error) {
-      console.error("Error getting documents: ", error);
-    }
-  }
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-  // เรียกใช้งานฟังก์ชันดึงข้อมูล
-  loadBookings();
-</script>
+        // 1. ฟังก์ชันดึงข้อมูลการจองทั้งหมดจาก Firestore มาแสดงในตารางแอดมิน
+        async function loadAdminBookings() {
+            const tbody = document.getElementById('booking-table-body');
+            const emptyState = document.getElementById('empty-state');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">กำลังโหลดข้อมูลจาก Cloud...</td></tr>';
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "bookings"));
+                tbody.innerHTML = '';
+
+                if (querySnapshot.empty) {
+                    emptyState.style.display = 'block';
+                    document.getElementById('total-bookings').textContent = '0';
+                    document.getElementById('pending-bookings').textContent = '0';
+                    document.getElementById('total-deposit').textContent = '0 บาท';
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+                let totalCount = 0;
+                let pendingCount = 0;
+
+                querySnapshot.forEach((documentSnapshot) => {
+                    totalCount++;
+                    const b = documentSnapshot.data();
+                    const docId = documentSnapshot.id;
+
+                    if (b.status === 'pending') pendingCount++;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><small style="color:var(--text-muted);">${b.date || '-'}</small></td>
+                        <td>
+                            <strong>${b.name}</strong><br>
+                            <span style="font-size:0.85rem; color:var(--text-muted);">${b.phone}</span><br>
+                            <a href="https://line.me/ti/p/~${b.lineid}" target="_blank" class="btn-action btn-line" style="margin-top:4px;"><i class="fa-brands fa-line"></i> ${b.lineid}</a>
+                        </td>
+                        <td>
+                            <strong>${b.carType || b.car}</strong><br>
+                            <span style="font-size:0.85rem; color:var(--secondary);">${b.route}</span>
+                        </td>
+                        <td><strong>${typeof b.price === 'number' ? b.price.toLocaleString() + ' THB' : b.price}</strong></td>
+                        <td>
+                            <select class="status-select" onchange="updateCloudStatus('${docId}', this.value)">
+                                <option value="pending" ${b.status === 'pending' ? 'selected' : ''}>🟡 รอดำเนินการ</option>
+                                <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>🟢 ยืนยันการจอง</option>
+                                <option value="cancelled" ${b.status === 'cancelled' ? 'selected' : ''}>🔴 ยกเลิก</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn-action btn-slip" onclick="openSlipModal('${b.slipBase64 || b.slipUrl || ''}')">
+                                <i class="fa-solid fa-receipt"></i> ดูสลิป
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn-action btn-delete" onclick="deleteCloudBooking('${docId}')">
+                                <i class="fa-solid fa-trash"></i> ลบ
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                document.getElementById('total-bookings').textContent = totalCount;
+                document.getElementById('pending-bookings').textContent = pendingCount;
+                document.getElementById('total-deposit').textContent = (totalCount * 100).toLocaleString() + ' บาท';
+
+            } catch (e) {
+                console.error("Error loading bookings: ", e);
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red; padding:20px;">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
+            }
+        }
+
+        // 2. ฟังก์ชันอัปเดตสถานะบน Cloud และส่งอีเมลอัตโนมัติเมื่อเลือก "confirmed"
+        window.updateCloudStatus = async function(docId, newStatus) {
+            try {
+                const docRef = doc(db, "bookings", docId);
+                
+                // อัปเดตสถานะลง Firestore ก่อน
+                await updateDoc(docRef, { status: newStatus });
+
+                // ถ้าแอดมินเปลี่ยนสถานะเป็น "ยืนยันการจอง" (confirmed) ให้ดึงข้อมูลมาส่งเมล
+                if (newStatus === 'confirmed') {
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+
+                        const templateParams = {
+                            to_name: data.name,
+                            to_email: data.email,
+                            phone: data.phone,
+                            car_type: data.carType || data.car,
+                            route: data.route,
+                            price: typeof data.price === 'number' ? data.price.toLocaleString() + " THB" : data.price,
+                            booking_id: docId
+                        };
+
+                        // ส่งอีเมลผ่าน EmailJS ด้วย Template ID ที่ถูกต้อง
+                        await emailjs.send('service_bwg87un', 'template_cd0p4xa', templateParams);
+                        console.log('Confirmation email sent successfully!');
+                    }
+                }
+
+                alert('อัปเดตสถานะและส่งอีเมลยืนยันสำเร็จ!');
+            } catch (e) {
+                console.error("Error updating status or sending email: ", e);
+                alert('อัปเดตสถานะสำเร็จ แต่เกิดข้อผิดพลาดในการส่งอีเมล');
+            }
+        };
+
+        // 3. ฟังก์ชันลบข้อมูลบน Cloud
+        window.deleteCloudBooking = async function(docId) {
+            if (confirm('คุณต้องการลบรายการจองนี้ออกจากระบบ Cloud ใช่หรือไม่?')) {
+                try {
+                    await deleteDoc(doc(db, "bookings", docId));
+                    alert('ลบข้อมูลสำเร็จ!');
+                    loadAdminBookings();
+                } catch (e) {
+                    console.error("Error deleting document: ", e);
+                    alert('ไม่สามารถลบข้อมูลได้');
+                }
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadAdminBookings();
+        });
+    </script>
+    <script src="mobile-switcher.js"></script>
 </body>
+
 </html>

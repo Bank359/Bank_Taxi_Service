@@ -658,12 +658,7 @@
             <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 10px;">&copy; 2026 Bank Taxi Service. All Rights Reserved.</p>
         </div>
     </footer>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script type="text/javascript">
-   (function(){
-      emailjs.init("TLr-PYAljdYhpJqk9"); // 🔑 นำ Public Key ของคุณมาใส่ตรงนี้ (ดูได้ที่ Account -> API Keys ใน EmailJS)
-   })();
-</script>
+
     <!-- Script สำหรับคำนวณราคา, ระบบภาษา และ Firebase (ใช้ Base64 ฟรีถาวร) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -878,7 +873,7 @@
         }
         window.previewSlip = previewSlip;
 
-        async function finalizeBooking() {
+       async function finalizeBooking() {
             const slipInput = document.getElementById('slip');
             const name = document.getElementById('name').value;
             const phone = document.getElementById('phone').value;
@@ -895,8 +890,6 @@
             }
 
             const file = slipInput.files[0];
-
-            // 🛠️ ระบบย่อขนาดรูปภาพอัตโนมัติก่อนแปลงเป็น Base64 เพื่อป้องกันข้อมูลเกิน 1MB ของ Firestore
             const reader = new FileReader();
             reader.readAsDataURL(file);
             
@@ -907,65 +900,42 @@
                 img.onload = async function () {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-
-                    // กำหนดความกว้างสูงสุดไม่เกิน 800px เพื่อลดขนาดไฟล์
                     const MAX_WIDTH = 800;
                     const scaleSize = MAX_WIDTH / img.width;
                     canvas.width = MAX_WIDTH;
                     canvas.height = img.height * scaleSize;
 
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                    // บีบอัดเป็นไฟล์ JPEG คุณภาพ 0.7 (ขนาดจะลดลงเหลือเพียงไม่กี่ร้อย KB)
                     const base64Slip = canvas.toDataURL('image/jpeg', 0.7);
 
                     try {
-    const docRef = await addDoc(collection(db, "bookings"), {
-        name: name,
-        phone: phone,
-        lineid: lineid,
-        email: email,
-        carType: car,
-        route: routeText,
-        price: Number(priceValue),
-        notes: notes,
-        deposit: 100,
-        slipBase64: base64Slip,
-        status: "pending",
-        createdAt: new Date()
-    });
+                        // บันทึกข้อมูลลง Cloud พร้อมสถานะรอตรวจสอบ
+                        const docRef = await addDoc(collection(db, "bookings"), {
+                            name: name,
+                            phone: phone,
+                            lineid: lineid,
+                            email: email,
+                            carType: car,
+                            route: routeText,
+                            price: Number(priceValue),
+                            notes: notes,
+                            deposit: 100,
+                            slipBase64: base64Slip,
+                            status: "pending", // รอดำเนินการ
+                            createdAt: new Date()
+                        });
 
-    // ✉️ เพิ่มคำสั่งส่งอีเมลอัตโนมัติผ่าน EmailJS ตรงนี้
-    const templateParams = {
-        to_name: name,
-        to_email: email,
-        phone: phone,
-        car_type: car,
-        route: routeText,
-        price: Number(priceValue).toLocaleString() + " THB",
-        booking_id: docRef.id
-    };
+                        alert(`Booking submitted successfully!\n- Booking ID: ${docRef.id}\n\nThank you for using Bank Taxi Service!`);
+                        location.reload();
 
-    // แทนที่ด้วย Service ID และ Template ID ของคุณ
-    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
-        .then(() => {
-            console.log('Email sent successfully!');
-        }, (error) => {
-            console.error('Email failed...', error);
-        });
-
-    alert(`Booking submitted successfully!\n- Booking ID: ${docRef.id}\n- Email confirmation sent!\n\nThank you for using Bank Taxi Service!`);
-    location.reload();
-
-} catch (e) {
-    console.error("Error adding document: ", e);
-    alert("Error saving data. Please try again.");
-}
+                    } catch (e) {
+                        console.error("Error adding document: ", e);
+                        alert("Error saving data. Please try again.");
+                    }
                 };
             };
         }
         window.finalizeBooking = finalizeBooking;
-
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const carParam = urlParams.get('car');
@@ -976,6 +946,6 @@
         });
     </script>
     <!-- EmailJS SDK -->
-
+<script src="mobile-switcher.js"></script>
 </body>
 </html>

@@ -671,12 +671,7 @@
             <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 10px;">&copy; 2026 Bank Taxi Service. All Rights Reserved.</p>
         </div>
     </footer>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script type="text/javascript">
-   (function(){
-      emailjs.init("TLr-PYAljdYhpJqk9"); // 🔑 นำ Public Key ของคุณมาใส่ตรงนี้ (ดูได้ที่ Account -> API Keys ใน EmailJS)
-   })();
-</script>
+
    <!-- Script สำหรับคำนวณราคา, ระบบภาษา และ Firebase -->
     <script type="module">
         // 1. นำเข้า Firebase SDK ที่จำเป็น
@@ -896,75 +891,68 @@
 
         // 2. ปรับปรุงฟังก์ชันบันทึกข้อมูลลง Cloud Firestore จริงๆ เมื่อผู้ใช้กดยืนยันขั้นตอนสุดท้าย
        async function finalizeBooking() {
-    const slipInput = document.getElementById('slip');
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const lineid = document.getElementById('lineid').value;
-    const email = document.getElementById('email').value;
-    const car = document.getElementById('car').value;
-    const routeText = document.getElementById('route').options[document.getElementById('route').selectedIndex].text;
-    const priceValue = document.getElementById('route').value;
-    const notes = document.getElementById('notes').value;
+            const slipInput = document.getElementById('slip');
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const lineid = document.getElementById('lineid').value;
+            const email = document.getElementById('email').value;
+            const car = document.getElementById('car').value;
+            const routeText = document.getElementById('route').options[document.getElementById('route').selectedIndex].text;
+            const priceValue = document.getElementById('route').value;
+            const notes = document.getElementById('notes').value;
 
-    if (slipInput.files.length === 0) {
-        alert('กรุณาแนบสลิปหลักฐานการโอนเงิน / Please attach the slip.');
-        return;
-    }
+            if (slipInput.files.length === 0) {
+                alert('Please attach the transfer slip. / กรุณาแนบสลิปหลักฐานการโอนเงิน');
+                return;
+            }
 
-    const file = slipInput.files[0];
+            const file = slipInput.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            
+            reader.onload = function (event) {
+                const img = new Image();
+                img.src = event.target.result;
+                
+                img.onload = async function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX_WIDTH = 800;
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
 
-    // แปลงไฟล์รูปภาพเป็น Base64 String เพื่อเก็บลง Firestore โดยตรง (ไม่ต้องใช้ Storage)
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    
-    reader.onload = async function () {
-        const base64Slip = reader.result;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const base64Slip = canvas.toDataURL('image/jpeg', 0.7);
 
-        try {
-    const docRef = await addDoc(collection(db, "bookings"), {
-        name: name,
-        phone: phone,
-        lineid: lineid,
-        email: email,
-        carType: car,
-        route: routeText,
-        price: Number(priceValue),
-        notes: notes,
-        deposit: 100,
-        slipBase64: base64Slip,
-        status: "pending",
-        createdAt: new Date()
-    });
+                    try {
+                        // บันทึกข้อมูลลง Cloud พร้อมสถานะรอตรวจสอบ
+                        const docRef = await addDoc(collection(db, "bookings"), {
+                            name: name,
+                            phone: phone,
+                            lineid: lineid,
+                            email: email,
+                            carType: car,
+                            route: routeText,
+                            price: Number(priceValue),
+                            notes: notes,
+                            deposit: 100,
+                            slipBase64: base64Slip,
+                            status: "pending", // รอดำเนินการ
+                            createdAt: new Date()
+                        });
 
-    // ✉️ เพิ่มคำสั่งส่งอีเมลอัตโนมัติผ่าน EmailJS ตรงนี้
-    const templateParams = {
-        to_name: name,
-        to_email: email,
-        phone: phone,
-        car_type: car,
-        route: routeText,
-        price: Number(priceValue).toLocaleString() + " THB",
-        booking_id: docRef.id
-    };
+                        alert(`Booking submitted successfully!\n- Booking ID: ${docRef.id}\n\nThank you for using Bank Taxi Service!`);
+                        location.reload();
 
-    // แทนที่ด้วย Service ID และ Template ID ของคุณ
-    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
-        .then(() => {
-            console.log('Email sent successfully!');
-        }, (error) => {
-            console.error('Email failed...', error);
-        });
-
-    alert(`Booking submitted successfully!\n- Booking ID: ${docRef.id}\n- Email confirmation sent!\n\nThank you for using Bank Taxi Service!`);
-    location.reload();
-
-} catch (e) {
-    console.error("Error adding document: ", e);
-    alert("Error saving data. Please try again.");
-}
-    };
-}
-window.finalizeBooking = finalizeBooking;
+                    } catch (e) {
+                        console.error("Error adding document: ", e);
+                        alert("Error saving data. Please try again.");
+                    }
+                };
+            };
+        }
+        window.finalizeBooking = finalizeBooking;
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const carParam = urlParams.get('car');
@@ -976,6 +964,6 @@ window.finalizeBooking = finalizeBooking;
     </script>
     <!-- EmailJS SDK -->
 
-    
+    <script src="mobile-switcher.js"></script>
 </body>
 </html>
