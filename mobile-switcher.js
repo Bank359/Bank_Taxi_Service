@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="bankDrawerBrand">
 
                     <div class="bankDrawerLogo" style="width: 40px; height: 40px; background: transparent; box-shadow: none;">
-                        <img src="https://cdn.discordapp.com/attachments/1519030341564764331/1536790163772940398/banktaxiservice-removebg-preview.png?ex=6a7caedf&is=6a7b5d5f&hm=d2f92a8938c5fba8a1c45aa0d7a9c8dda54949da973524910ed694a3c0c37fad&" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                        <img src="https://img2.pic.in.th/banktaxiservice9c0fcb355ca996f2.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
 
                     <div>
@@ -351,6 +351,15 @@ document.addEventListener("DOMContentLoaded", () => {
     body.bank-mobile-mode {
         overflow-x: hidden !important;
         width: 100% !important;
+        padding-top: 60px !important; /* ดันเนื้อหาเว็บไซต์ลงมาไม่ให้โดน Header บัง */
+    }
+
+    /* ซ่อน Navbar / Header เดิมของเว็บไซต์เมื่อเปิดโหมดมือถือ */
+    body.bank-mobile-mode header:not(#bankMobileHeader),
+    body.bank-mobile-mode nav:not(.bankDrawerNav),
+    body.bank-mobile-mode .navbar,
+    body.bank-mobile-mode .nav-container {
+        display: none !important;
     }
 
     body.bank-mobile-mode #bankTaxiMobileSystem {

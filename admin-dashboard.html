@@ -23,7 +23,6 @@
             --text-muted: #64748b;
             --border-color: #e2e8f0;
             --sidebar-width: 280px;
-            --sidebar-width-collapsed: 80px;
             --radius-lg: 20px;
             --radius-md: 12px;
             --shadow-subtle: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
@@ -44,7 +43,6 @@
             overflow-x: hidden;
         }
 
-        /* Layout Container */
         .admin-layout {
             display: flex;
             min-height: 100vh;
@@ -175,7 +173,7 @@
             box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
         }
 
-        /* Main Content Wrapper */
+        /* Main Wrapper */
         .main-wrapper {
             margin-left: var(--sidebar-width);
             flex-grow: 1;
@@ -378,6 +376,9 @@
             gap: 6px;
         }
 
+        .btn-detail { background: #f3e8ff; color: #7e22ce; }
+        .btn-detail:hover { background: #e9d5ff; }
+
         .btn-slip { background: #e0f2fe; color: #0284c7; }
         .btn-slip:hover { background: #bae6fd; }
 
@@ -398,8 +399,8 @@
             font-weight: 700;
         }
 
-        /* Modal สำหรับดูสลิป */
-        #slipModal {
+        /* Modal ดีไซน์ทั่วไป */
+        .custom-modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -414,12 +415,14 @@
             background: #ffffff;
             padding: 30px;
             border-radius: var(--radius-lg);
-            max-width: 450px;
+            max-width: 500px;
             width: 90%;
-            text-align: center;
+            text-align: left;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             position: relative;
             animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-height: 85vh;
+            overflow-y: auto;
         }
 
         @keyframes modalPop {
@@ -429,7 +432,7 @@
 
         .modal-content img {
             width: 100%;
-            max-height: 420px;
+            max-height: 380px;
             object-fit: contain;
             border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
@@ -455,6 +458,19 @@
         .close-modal:hover {
             background: #e2e8f0;
             color: var(--danger);
+        }
+
+        .detail-group {
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+            border-bottom: 1px dashed #f1f5f9;
+            padding-bottom: 8px;
+        }
+
+        .detail-group strong {
+            color: var(--primary);
+            display: inline-block;
+            width: 150px;
         }
 
         /* Responsive Design */
@@ -568,11 +584,12 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>วันที่/เวลาจอง</th>
+                                <th>วันที่ทำรายการ / วันเดินทาง</th>
                                 <th>ชื่อลูกค้า & ช่องทางติดต่อ</th>
                                 <th>เส้นทาง & รุ่นรถ</th>
                                 <th>ราคารวม</th>
                                 <th>สถานะการจอง</th>
+                                <th>ข้อมูลเพิ่มเติม</th>
                                 <th>หลักฐานสลิป</th>
                                 <th>จัดการข้อมูล</th>
                             </tr>
@@ -591,9 +608,20 @@
         </div>
     </div>
 
-    <!-- Modal สำหรับแสดงรูปสลิป -->
-    <div id="slipModal" onclick="closeSlipModal()">
+    <!-- Modal สำหรับแสดงรายละเอียดข้อมูลทั้งหมดของลูกค้า -->
+    <div id="detailModal" class="custom-modal" onclick="closeDetailModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeDetailModal()">&times;</span>
+            <h3 style="margin-top:0; color:var(--primary); font-size:1.2rem; border-bottom: 2px solid var(--border-color); padding-bottom: 12px; margin-bottom: 20px;"><i class="fa-solid fa-circle-info" style="color:var(--accent);"></i> รายละเอียดการจองทั้งหมด</h3>
+            <div id="modalDetailBody">
+                <!-- ข้อมูลรายละเอียดจะถูกเติมที่นี่ -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal สำหรับแสดงรูปสลิป -->
+    <div id="slipModal" class="custom-modal" onclick="closeSlipModal()">
+        <div class="modal-content" onclick="event.stopPropagation()" style="text-align: center;">
             <span class="close-modal" onclick="closeSlipModal()">&times;</span>
             <h3 style="margin-top:0; color:var(--primary); font-size:1.2rem;"><i class="fa-solid fa-receipt"></i> หลักฐานการโอนเงิน (สลิปมัดจำ)</h3>
             <img id="modalSlipImg" src="" alt="Slip Image">
@@ -629,7 +657,7 @@
 
         async function loadAdminBookings() {
             const tbody = document.getElementById('booking-table-body');
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--accent);"></i><br><span style="margin-top:10px; display:inline-block;">กำลังโหลดข้อมูลจาก Cloud...</span></td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--accent);"></i><br><span style="margin-top:10px; display:inline-block;">กำลังโหลดข้อมูลจาก Cloud...</span></td></tr>';
 
             try {
                 const querySnapshot = await getDocs(collection(db, "bookings"));
@@ -646,7 +674,7 @@
 
             } catch (e) {
                 console.error("Error loading bookings: ", e);
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red; padding:30px;">เกิดข้อผิดพลาดในการโหลดข้อมูลจากระบบ Cloud</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:red; padding:30px;">เกิดข้อผิดพลาดในการโหลดข้อมูลจากระบบ Cloud</td></tr>';
             }
         }
 
@@ -674,17 +702,30 @@
             document.getElementById('badge-pending').textContent = pendingCount;
 
             filteredData.forEach((b) => {
+                // จัดรูปแบบวันที่ทำรายการ (Timestamp) หากมีบันทึกไว้
+                let createdAtFormatted = '-';
+                if (b.createdAt) {
+                    if (typeof b.createdAt.toDate === 'function') {
+                        createdAtFormatted = b.createdAt.toDate().toLocaleString('th-TH');
+                    } else {
+                        createdAtFormatted = new Date(b.createdAt).toLocaleString('th-TH');
+                    }
+                }
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><small style="color:var(--text-muted); font-weight: 600;">${b.date || '-'}</small></td>
+                    <td>
+                        <strong style="color:var(--primary); display:block; font-size:0.88rem;"><i class="fa-regular fa-calendar-days" style="color:var(--accent);"></i> เดินทาง: ${b.date || '-'}</strong>
+                        <small style="color:var(--text-muted);"><i class="fa-regular fa-clock"></i> จองเมื่อ: ${createdAtFormatted}</small>
+                    </td>
                     <td>
                         <strong style="color: var(--primary);">${b.name || 'ไม่ระบุชื่อ'}</strong><br>
-                        <span style="font-size:0.85rem; color:var(--text-muted);">${b.phone || '-'}</span><br>
+                        <span style="font-size:0.85rem; color:var(--text-muted);"><i class="fa-solid fa-phone"></i> ${b.phone || '-'}</span><br>
                         ${b.lineid ? `<a href="https://line.me/ti/p/~${b.lineid}" target="_blank" class="btn-action btn-line" style="margin-top:6px;"><i class="fa-brands fa-line"></i> ${b.lineid}</a>` : ''}
                     </td>
                     <td>
                         <strong style="color: var(--primary);">${b.carType || b.car || 'รถแท็กซี่'}</strong><br>
-                        <span style="font-size:0.85rem; color:var(--accent); font-weight:600;">${b.route || '-'}</span>
+                        <span style="font-size:0.85rem; color:var(--accent); font-weight:600;"><i class="fa-solid fa-route"></i> ${b.route || '-'}</span>
                     </td>
                     <td><strong style="color: var(--primary);">${typeof b.price === 'number' ? b.price.toLocaleString() + ' THB' : (b.price || '-')}</strong></td>
                     <td>
@@ -693,6 +734,11 @@
                             <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>🟢 ยืนยันแล้ว</option>
                             <option value="cancelled" ${b.status === 'cancelled' ? 'selected' : ''}>🔴 ยกเลิก</option>
                         </select>
+                    </td>
+                    <td>
+                        <button class="btn-action btn-detail" onclick="openDetailModal('${b.id}')">
+                            <i class="fa-solid fa-eye"></i> ดูข้อมูล
+                        </button>
                     </td>
                     <td>
                         <button class="btn-action btn-slip" onclick="openSlipModal('${b.slipBase64 || b.slipUrl || ''}')">
@@ -708,13 +754,11 @@
                 tbody.appendChild(tr);
             });
 
-            // อัปเดตสถิติตัวเลขภาพรวม (คำนวณมัดจำเคสละ 400 บาท)
             document.getElementById('total-bookings').textContent = allBookingsData.length;
             document.getElementById('pending-bookings').textContent = pendingCount;
             document.getElementById('total-deposit').textContent = (allBookingsData.length * 400).toLocaleString() + ' บาท';
         }
 
-        // ฟังก์ชันสลับมุมมองหน้าแอดมินตามเมนูด้านข้าง
         window.switchView = function(viewType, element) {
             currentFilter = viewType;
             document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
@@ -734,7 +778,6 @@
             renderTable();
         };
 
-        // ฟังก์ชันอัปเดตสถานะบน Cloud และส่งอีเมลยืนยันอัตโนมัติผ่าน EmailJS
         window.updateCloudStatus = async function(docId, newStatus) {
             try {
                 const docRef = doc(db, "bookings", docId);
@@ -756,7 +799,6 @@
                             };
 
                             await emailjs.send('service_bwg87un', 'template_cd0p4xa', templateParams);
-                            console.log('Confirmation email sent successfully!');
                         }
                     }
                 }
@@ -769,7 +811,6 @@
             }
         };
 
-        // ฟังก์ชันลบข้อมูลบน Cloud
         window.deleteCloudBooking = async function(docId) {
             if (confirm('คุณต้องการลบรายการจองนี้ออกจากระบบ Cloud ใช่หรือไม่?')) {
                 try {
@@ -783,7 +824,45 @@
             }
         };
 
-        // ฟังก์ชันเปิด/ปิด Modal สลิป
+        // ฟังก์ชันเปิด Modal แสดงข้อมูลทั้งหมดที่ลูกค้ากรอก
+        window.openDetailModal = function(docId) {
+            const booking = allBookingsData.find(b => b.id === docId);
+            if (!booking) return;
+
+            let createdAtFormatted = '-';
+            if (booking.createdAt) {
+                if (typeof booking.createdAt.toDate === 'function') {
+                    createdAtFormatted = booking.createdAt.toDate().toLocaleString('th-TH');
+                } else {
+                    createdAtFormatted = new Date(booking.createdAt).toLocaleString('th-TH');
+                }
+            }
+
+            const modalBody = document.getElementById('modalDetailBody');
+            modalBody.innerHTML = `
+                <div class="detail-group"><strong>รหัสการจอง:</strong> <span style="color:var(--text-muted);">${booking.id}</span></div>
+                <div class="detail-group"><strong>วันที่ทำรายการ:</strong> <span>${createdAtFormatted}</span></div>
+                <div class="detail-group"><strong>ชื่อ-นามสกุล:</strong> <span>${booking.name || '-'}</span></div>
+                <div class="detail-group"><strong>เบอร์โทรศัพท์:</strong> <span>${booking.phone || '-'}</span></div>
+                <div class="detail-group"><strong>Line ID:</strong> <span>${booking.lineid || '-'}</span></div>
+                <div class="detail-group"><strong>อีเมล:</strong> <span>${booking.email || '-'}</span></div>
+                <div class="detail-group"><strong>วันที่เดินทาง:</strong> <span style="color:var(--accent); font-weight:700;">${booking.date || '-'}</span></div>
+                <div class="detail-group"><strong>เส้นทาง:</strong> <span>${booking.route || '-'}</span></div>
+                <div class="detail-group"><strong>รุ่นรถที่เลือก:</strong> <span>${booking.carType || booking.car || '-'}</span></div>
+                <div class="detail-group"><strong>ราคารวม:</strong> <span style="color:var(--success); font-weight:700;">${typeof booking.price === 'number' ? booking.price.toLocaleString() + ' THB' : (booking.price || '-')}</span></div>
+                <div class="detail-group" style="border-bottom: none; background: #f8fafc; padding: 12px; border-radius: 8px; margin-top: 15px;">
+                    <strong style="display:block; margin-bottom:5px; color:var(--primary);"><i class="fa-solid fa-note-sticky"></i> หมายเหตุ / ข้อความจากลูกค้า:</strong>
+                    <span style="color: #475569; white-space: pre-wrap;">${booking.note || booking.message || 'ไม่มีหมายเหตุเพิ่มเติม'}</span>
+                </div>
+            `;
+
+            document.getElementById('detailModal').style.display = 'flex';
+        };
+
+        window.closeDetailModal = function() {
+            document.getElementById('detailModal').style.display = 'none';
+        };
+
         window.openSlipModal = function(imgSrc) {
             const modalImg = document.getElementById('modalSlipImg');
             if (imgSrc && imgSrc !== 'undefined' && imgSrc !== '') {
