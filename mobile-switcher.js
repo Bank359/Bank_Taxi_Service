@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     const STORAGE_KEY = "BANK_TAXI_MOBILE_MODE";
+    const THEME_STORAGE_KEY = "BANK_TAXI_THEME_MODE";
 
     // =========================================================
     // ป้องกันระบบถูกสร้างซ้ำ
@@ -23,15 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const isEnglish = currentFile.includes("-en.html");
 
-    // คำนวณชื่อไฟล์สำหรับสลับภาษาให้อยู่ที่หน้าเดิมเสมอ
-    let targetLangFile = "";
-    if (isEnglish) {
-        targetLangFile = currentFile.replace("-en.html", ".html");
-    } else {
-        targetLangFile = currentFile === "" || currentFile === "index.html" 
-            ? "index-en.html" 
-            : currentFile.replace(".html", "-en.html");
-    }
+    // ตรวจสอบว่าเป็นหน้า "รถของเรา" (cars.html หรือ cars-en.html) หรือไม่
+    const isCarsPage = currentFile.includes("cars");
 
 
     // =========================================================
@@ -155,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div id="bankMobileBrand">
 
                 <div class="bankMobileLogo" style="width: 36px; height: 36px; background: transparent; box-shadow: none;">
-                    <img src="https://cdn.discordapp.com/attachments/1519030341564764331/1536790163772940398/banktaxiservice-removebg-preview.png?ex=6a7caedf&is=6a7b5d5f&hm=d2f92a8938c5fba8a1c45aa0d7a9c8dda54949da973524910ed694a3c0c37fad&" alt="Bank Taxi Service Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                    <img src="https://img2.pic.in.th/banktaxiservicee5a11d6497bc7a05.png" alt="Bank Taxi Service Logo" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
 
                 <div class="bankMobileBrandText">
@@ -183,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         <!-- ==============================================
-             DRAWER (พร้อมปุ่มเปลี่ยนภาษาด้านใน)
+             DRAWER (พร้อมปุ่มเปลี่ยนภาษาและโหมดสว่าง/ทึบด้านใน)
         =============================================== -->
 
         <aside id="bankMobileDrawer">
@@ -193,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="bankDrawerBrand">
 
                     <div class="bankDrawerLogo" style="width: 40px; height: 40px; background: transparent; box-shadow: none;">
-                        <img src="https://img2.pic.in.th/banktaxiservice9c0fcb355ca996f2.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                        <img src="https://img2.pic.in.th/banktaxiservicee5a11d6497bc7a05.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
 
                     <div>
@@ -222,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
 
-            <!-- แผงสลับภาษาด้านในเมนู 3 ขีด (เปลี่ยนภาษาบนหน้าเดิมอย่างแม่นยำ) -->
+            <!-- แผงสลับภาษาด้านในเมนู 3 ขีด -->
             <div class="bankDrawerLangBox">
                 <span class="bankLangTitle">${isEnglish ? "Language / ภาษา" : "ภาษา / Language"}</span>
                 <div class="bankLangSwitchGroup">
@@ -232,6 +226,20 @@ document.addEventListener("DOMContentLoaded", () => {
                     <a href="${currentFile.includes("-en.html") ? currentFile : (currentFile === "" || currentFile === "index.html" ? "index-en.html" : currentFile.replace(".html", "-en.html"))}" class="bankDrawerLangBtn ${isEnglish ? 'active' : ''}" onclick="if(typeof setLanguage === 'function'){ setLanguage('en'); }">
                         🇬🇧 English
                     </a>
+                </div>
+            </div>
+
+
+            <!-- แผงสลับโหมดสว่าง / ทึบ (Theme Mode) ด้านในเมนู -->
+            <div class="bankDrawerLangBox" style="margin-top: 10px;">
+                <span class="bankLangTitle">${isEnglish ? "Theme / ธีมหน้าจอ" : "ธีมหน้าจอ / Theme"}</span>
+                <div class="bankLangSwitchGroup">
+                    <button type="button" id="bankThemeLight" class="bankDrawerLangBtn" onclick="setThemeMode('light')">
+                        ☀️ ${isEnglish ? "Light" : "สว่าง"}
+                    </button>
+                    <button type="button" id="bankThemeDark" class="bankDrawerLangBtn" onclick="setThemeMode('dark')">
+                        🌙 ${isEnglish ? "Dark" : "ทึบ"}
+                    </button>
                 </div>
             </div>
 
@@ -276,17 +284,16 @@ document.addEventListener("DOMContentLoaded", () => {
             </nav>
 
 
+            ${!isCarsPage ? `
             <div class="bankDrawerFooter">
-
                 <span class="bankOnlineDot"></span>
-
                 <span>
                     ${isEnglish
                         ? "Service available"
                         : "พร้อมให้บริการ"}
                 </span>
-
             </div>
+            ` : ''}
 
         </aside>
 
@@ -351,7 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
     body.bank-mobile-mode {
         overflow-x: hidden !important;
         width: 100% !important;
-        padding-top: 60px !important; /* ดันเนื้อหาเว็บไซต์ลงมาไม่ให้โดน Header บัง */
+        padding-top: 60px !important;
     }
 
     /* ซ่อน Navbar / Header เดิมของเว็บไซต์เมื่อเปิดโหมดมือถือ */
@@ -362,9 +369,95 @@ document.addEventListener("DOMContentLoaded", () => {
         display: none !important;
     }
 
+    /* ซ่อน Footer เฉพาะในหน้า Cars เมื่ออยู่ในโหมดมือถือ */
+    ${isCarsPage ? `
+    body.bank-mobile-mode footer,
+    body.bank-mobile-mode .footer,
+    body.bank-mobile-mode .bankDrawerFooter {
+        display: none !important;
+    }
+    ` : ''}
+
     body.bank-mobile-mode #bankTaxiMobileSystem {
         display: block;
     }
+
+    /* ธีมสว่าง (Light Mode) สำหรับ Header และ Drawer */
+    body.bank-theme-light #bankMobileHeader {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border-bottom-color: rgba(15, 23, 42, 0.08) !important;
+    }
+    body.bank-theme-light .bankMobileBrandText strong {
+        color: #0f172a !important;
+    }
+    body.bank-theme-light .bankMobileBrandText small {
+        color: #64748b !important;
+    }
+    body.bank-theme-light #bankMobileMenuButton span {
+        background: #1e293b !important;
+    }
+    body.bank-theme-light #bankMobileDrawer {
+        background: #ffffff !important;
+        color: #334155 !important;
+    }
+    body.bank-theme-light .bankDrawerBrand strong {
+        color: #0f172a !important;
+    }
+    body.bank-theme-light .bankDrawerItem {
+        color: #334155 !important;
+    }
+    body.bank-theme-light .bankDrawerItem:hover {
+        background: #f1f5f9 !important;
+    }
+
+    /* ธีมทึบ (Dark Mode) สำหรับ Header และ Drawer */
+    body.bank-theme-dark #bankMobileHeader {
+        background: rgba(15, 23, 42, 0.95) !important;
+        border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    body.bank-theme-dark .bankMobileBrandText strong {
+        color: #f8fafc !important;
+    }
+    body.bank-theme-dark .bankMobileBrandText small {
+        color: #94a3b8 !important;
+    }
+    body.bank-theme-dark #bankMobileMenuButton span {
+        background: #f8fafc !important;
+    }
+    body.bank-theme-dark #bankMobileDrawer {
+        background: #0f172a !important;
+        color: #f8fafc !important;
+    }
+    body.bank-theme-dark .bankDrawerBrand strong {
+        color: #f8fafc !important;
+    }
+    body.bank-theme-dark .bankDrawerBrand small {
+        color: #94a3b8 !important;
+    }
+    body.bank-theme-dark #bankDrawerClose {
+        background: #1e293b !important;
+        color: #f8fafc !important;
+    }
+    body.bank-theme-dark .bankDrawerLangBox {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+    }
+    body.bank-theme-dark .bankDrawerLangBtn {
+        background: #0f172a !important;
+        border-color: #334155 !important;
+        color: #f8fafc !important;
+    }
+    body.bank-theme-dark .bankDrawerItem {
+        color: #f8fafc !important;
+    }
+    body.bank-theme-dark .bankDrawerItem:hover {
+        background: #1e293b !important;
+    }
+    body.bank-theme-dark .bankDrawerFooter {
+        background: #1e293b !important;
+        color: #94a3b8 !important;
+    }
+
 
     /* MOBILE HEADER */
     body.bank-mobile-mode #bankMobileHeader {
@@ -378,10 +471,8 @@ document.addEventListener("DOMContentLoaded", () => {
         align-items: center;
         box-sizing: border-box;
         padding: 0 15px;
-        background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(15px);
         -webkit-backdrop-filter: blur(15px);
-        border-bottom: 1px solid rgba(15, 23, 42, 0.08);
         box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
     }
 
@@ -406,13 +497,8 @@ document.addEventListener("DOMContentLoaded", () => {
         width: 22px;
         height: 2.5px;
         border-radius: 4px;
-        background: #1e293b;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         transform-origin: center;
-    }
-
-    #bankMobileMenuButton:hover {
-        background: #f1f5f9;
     }
 
     body.bank-drawer-open #bankMobileMenuButton span:nth-child(1) {
@@ -446,7 +532,6 @@ document.addEventListener("DOMContentLoaded", () => {
         display: block;
         font-size: 14px;
         font-weight: 800;
-        color: #0f172a;
         letter-spacing: .2px;
     }
 
@@ -454,7 +539,6 @@ document.addEventListener("DOMContentLoaded", () => {
         display: block;
         margin-top: 2px;
         font-size: 10px;
-        color: #64748b;
     }
 
     .bankMobileHeaderRight {
@@ -495,7 +579,6 @@ document.addEventListener("DOMContentLoaded", () => {
         z-index: 9999;
         box-sizing: border-box;
         padding: 20px;
-        background: #ffffff;
         box-shadow: 15px 0 45px rgba(15, 23, 42, 0.18);
         transform: translateX(-110%);
         transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
@@ -529,7 +612,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     .bankDrawerBrand strong {
         display: block;
-        color: #0f172a;
         font-size: 15px;
         font-weight: 700;
     }
@@ -537,7 +619,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .bankDrawerBrand small {
         display: block;
         margin-top: 2px;
-        color: #64748b;
         font-size: 11px;
     }
 
@@ -546,8 +627,6 @@ document.addEventListener("DOMContentLoaded", () => {
         height: 36px;
         border: none;
         border-radius: 50%;
-        background: #f1f5f9;
-        color: #475569;
         font-size: 22px;
         line-height: 1;
         cursor: pointer;
@@ -558,28 +637,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     #bankDrawerClose:hover {
-        background: #e2e8f0;
         transform: rotate(90deg);
     }
 
 
-    /* กล่องเปลี่ยนภาษาในเมนู 3 ขีด */
+    /* กล่องเปลี่ยนภาษา/ธีมในเมนู 3 ขีด */
     .bankDrawerLangBox {
         margin-top: 18px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
         padding: 12px;
         border-radius: 12px;
+        border: 1px solid transparent;
     }
 
     .bankLangTitle {
         display: block;
         font-size: 11px;
         font-weight: 700;
-        color: #64748b;
         margin-bottom: 8px;
         text-transform: uppercase;
         letter-spacing: .5px;
+        color: #64748b;
     }
 
     .bankLangSwitchGroup {
@@ -591,20 +668,19 @@ document.addEventListener("DOMContentLoaded", () => {
         flex: 1;
         text-align: center;
         padding: 8px;
-        background: #ffffff;
-        border: 1px solid #cbd5e1;
         border-radius: 8px;
-        color: #334155;
         font-size: 13px;
         font-weight: 600;
         text-decoration: none;
+        cursor: pointer;
         transition: all 0.2s ease;
     }
 
-    .bankDrawerLangBtn.active {
+    .bankDrawerLangBtn.active,
+    .bankDrawerLangBtn.bank-theme-active {
         background: linear-gradient(135deg, #667eea, #5a67d8);
-        border-color: transparent;
-        color: #ffffff;
+        border-color: transparent !important;
+        color: #ffffff !important;
         box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
     }
 
@@ -633,13 +709,10 @@ document.addEventListener("DOMContentLoaded", () => {
         padding: 8px 10px;
         border-radius: 12px;
         text-decoration: none;
-        color: #334155;
         transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
     }
 
     .bankDrawerItem:hover {
-        background: #f1f5f9;
-        color: #4f46e5;
         transform: translateX(3px);
     }
 
@@ -681,8 +754,6 @@ document.addEventListener("DOMContentLoaded", () => {
         gap: 8px;
         padding: 10px 12px;
         border-radius: 10px;
-        background: #f8fafc;
-        color: #64748b;
         font-size: 12px;
     }
 
@@ -791,6 +862,34 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         link.addEventListener("click", closeDrawer);
     });
+
+    // ฟังก์ชันควบคุมการเปลี่ยนธีม (Light / Dark)
+    window.setThemeMode = function(mode) {
+        const lightBtn = document.getElementById("bankThemeLight");
+        const darkBtn = document.getElementById("bankThemeDark");
+
+        if (mode === "dark") {
+            document.body.classList.add("bank-theme-dark");
+            document.body.classList.remove("bank-theme-light");
+            if (lightBtn && darkBtn) {
+                lightBtn.classList.remove("bank-theme-active");
+                darkBtn.classList.add("bank-theme-active");
+            }
+            localStorage.setItem(THEME_STORAGE_KEY, "dark");
+        } else {
+            document.body.classList.add("bank-theme-light");
+            document.body.classList.remove("bank-theme-dark");
+            if (lightBtn && darkBtn) {
+                darkBtn.classList.remove("bank-theme-active");
+                lightBtn.classList.add("bank-theme-active");
+            }
+            localStorage.setItem(THEME_STORAGE_KEY, "light");
+        }
+    };
+
+    // โหลดค่าธีมที่บันทึกไว้ (ค่าเริ่มต้นเป็นสว่าง light)
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || "light";
+    setThemeMode(savedTheme);
 
     function applyMobileMode(enabled) {
         const iconContainer = switchButton.querySelector(".bankSwitchIcon");
