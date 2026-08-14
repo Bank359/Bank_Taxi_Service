@@ -22,16 +22,38 @@
             --text-main: #334155;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
+            --sidebar-bg: linear-gradient(180deg, #0b1329 0%, #111c38 100%);
             --sidebar-width: 280px;
             --radius-lg: 20px;
             --radius-md: 12px;
             --shadow-subtle: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
             --shadow-hover: 0 10px 30px -4px rgba(2, 132, 199, 0.15);
+            --table-hover: #f8fafc;
+        }
+
+        /* Dark Theme Variables */
+        [data-theme="dark"] {
+            --primary: #f8fafc;
+            --primary-light: #334155;
+            --accent: #38bdf8;
+            --accent-gradient: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --bg-main: #0b0f19;
+            --card-bg: #111827;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: #1f2937;
+            --sidebar-bg: linear-gradient(180deg, #030712 0%, #0f172a 100%);
+            --shadow-subtle: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 10px 30px -4px rgba(56, 189, 248, 0.15);
+            --table-hover: #1f2937;
         }
 
         * {
             box-sizing: border-box;
-            transition: all 0.25s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         body {
@@ -51,7 +73,7 @@
         /* Sidebar Styling */
         .sidebar {
             width: var(--sidebar-width);
-            background: linear-gradient(180deg, #0b1329 0%, #111c38 100%);
+            background: var(--sidebar-bg);
             color: white;
             padding: 30px 20px;
             display: flex;
@@ -214,6 +236,34 @@
             font-weight: 700;
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--primary);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: scale(1.05);
+        }
+
         .admin-profile {
             display: flex;
             align-items: center;
@@ -266,7 +316,7 @@
         .stat-card:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-hover);
-            border-color: #bae6fd;
+            border-color: var(--accent);
         }
 
         .stat-card:hover::after {
@@ -283,10 +333,10 @@
             font-size: 1.4rem;
         }
 
-        .stat-icon.blue { background: rgba(2, 132, 199, 0.1); color: var(--accent); }
-        .stat-icon.yellow { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-        .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-        .stat-icon.purple { background: rgba(126, 34, 206, 0.1); color: #7e22ce; }
+        .stat-icon.blue { background: rgba(2, 132, 199, 0.15); color: var(--accent); }
+        .stat-icon.yellow { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .stat-icon.green { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .stat-icon.purple { background: rgba(126, 34, 206, 0.15); color: #a855f7; }
 
         .stat-info h3 {
             margin: 0 0 4px 0;
@@ -345,7 +395,7 @@
         }
 
         th {
-            background: #f8fafc;
+            background: var(--bg-main);
             color: var(--primary);
             padding: 16px 18px;
             font-weight: 700;
@@ -354,8 +404,8 @@
 
         td {
             padding: 16px 18px;
-            border-bottom: 1px solid #f1f5f9;
-            color: #334155;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
             vertical-align: middle;
         }
 
@@ -364,7 +414,7 @@
         }
 
         tr:hover td {
-            background-color: #f8fafc;
+            background-color: var(--table-hover);
         }
 
         /* Action Buttons & Status */
@@ -387,32 +437,33 @@
             gap: 6px;
         }
 
-        .btn-detail { background: #f3e8ff; color: #7e22ce; }
-        .btn-detail:hover { background: #e9d5ff; }
+        .btn-detail { background: rgba(126, 34, 206, 0.15); color: #a855f7; }
+        .btn-detail:hover { background: rgba(126, 34, 206, 0.25); }
 
-        .btn-slip { background: #e0f2fe; color: #0284c7; }
-        .btn-slip:hover { background: #bae6fd; }
+        .btn-slip { background: rgba(2, 132, 199, 0.15); color: var(--accent); }
+        .btn-slip:hover { background: rgba(2, 132, 199, 0.25); }
 
-        .btn-line { background: #dcfce7; color: #16a34a; }
-        .btn-line:hover { background: #bbf7d0; }
+        .btn-line { background: rgba(22, 163, 74, 0.15); color: var(--success); }
+        .btn-line:hover { background: rgba(22, 163, 74, 0.25); }
 
-        .btn-delete { background: #fee2e2; color: #dc2626; }
-        .btn-delete:hover { background: #fecaca; }
+        .btn-delete { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .btn-delete:hover { background: rgba(239, 68, 68, 0.25); }
 
-        .btn-delete-all { background: #ef4444; color: white; }
-        .btn-delete-all:hover { background: #dc2626; }
+        .btn-delete-all { background: var(--danger); color: white; }
+        .btn-delete-all:hover { opacity: 0.9; }
 
-        .btn-edit { background: #fef3c7; color: #d97706; }
-        .btn-edit:hover { background: #fde68a; }
+        .btn-edit { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .btn-edit:hover { background: rgba(245, 158, 11, 0.25); }
 
         .status-select {
             padding: 8px 12px;
             border-radius: 10px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border-color);
             font-family: 'Sarabun', sans-serif;
             font-size: 0.88rem;
             cursor: pointer;
-            background-color: #ffffff;
+            background-color: var(--card-bg);
+            color: var(--text-main);
             font-weight: 700;
         }
 
@@ -429,7 +480,7 @@
         }
 
         .modal-content {
-            background: #ffffff;
+            background: var(--card-bg);
             padding: 30px;
             border-radius: var(--radius-lg);
             max-width: 500px;
@@ -440,6 +491,8 @@
             animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             max-height: 85vh;
             overflow-y: auto;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
         }
 
         @keyframes modalPop {
@@ -454,7 +507,7 @@
             border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
             margin-top: 15px;
-            background: #f8fafc;
+            background: var(--bg-main);
         }
 
         .close-modal {
@@ -469,18 +522,18 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            background: #f1f5f9;
+            background: var(--bg-main);
         }
 
         .close-modal:hover {
-            background: #e2e8f0;
+            background: var(--border-color);
             color: var(--danger);
         }
 
         .detail-group {
             margin-bottom: 14px;
             font-size: 0.95rem;
-            border-bottom: 1px dashed #f1f5f9;
+            border-bottom: 1px dashed var(--border-color);
             padding-bottom: 8px;
         }
 
@@ -504,7 +557,9 @@
             width: 100%;
             padding: 10px 14px;
             border-radius: 10px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-main);
+            color: var(--text-main);
             font-family: 'Sarabun', sans-serif;
             font-size: 0.92rem;
         }
@@ -522,7 +577,7 @@
             margin-bottom: 30px;
         }
         .finance-box {
-            background: white;
+            background: var(--card-bg);
             padding: 25px;
             border-radius: var(--radius-lg);
             border: 1px solid var(--border-color);
@@ -576,7 +631,7 @@
         }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
     <div class="admin-layout">
         <!-- Sidebar Navigation -->
@@ -609,7 +664,10 @@
             <!-- Header Bar -->
             <div class="admin-header">
                 <h1 id="view-title"><i class="fa-solid fa-chart-line" style="color: var(--accent);"></i> รายการจองทั้งหมดในระบบ</h1>
-                <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="header-actions">
+                    <button class="theme-toggle-btn" onclick="toggleTheme()" title="เปลี่ยนโหมดสีสว่าง/มืด">
+                        <i id="theme-icon" class="fa-solid fa-moon"></i>
+                    </button>
                     <button class="btn-action btn-delete-all" onclick="deleteAllBookings()">
                         <i class="fa-solid fa-trash-can"></i> ลบข้อมูลทั้งหมด
                     </button>
@@ -617,7 +675,7 @@
                         <div class="admin-avatar">A</div>
                         <div style="font-size: 0.9rem; line-height: 1.3;">
                             <strong>ผู้ดูแลระบบ</strong><br>
-                            <span style="color: #10b981; font-size: 0.78rem; font-weight: 700;"><i class="fa-solid fa-circle" style="font-size: 6px;"></i> ระบบออนไลน์</span>
+                            <span style="color: var(--success); font-size: 0.78rem; font-weight: 700;"><i class="fa-solid fa-circle" style="font-size: 6px;"></i> ระบบออนไลน์</span>
                         </div>
                     </div>
                 </div>
@@ -695,7 +753,7 @@
                 </div>
                 
                 <div id="empty-state" style="text-align: center; padding: 50px 20px; color: var(--text-muted); display: none;">
-                    <i class="fa-solid fa-folder-open" style="font-size: 3.5rem; margin-bottom: 15px; color: #cbd5e1;"></i>
+                    <i class="fa-solid fa-folder-open" style="font-size: 3.5rem; margin-bottom: 15px; color: var(--border-color);"></i>
                     <p style="font-size: 1.1rem; font-weight: 600;">ยังไม่มีรายการจองในหมวดหมู่นี้</p>
                 </div>
             </div>
@@ -739,7 +797,7 @@
                     <textarea id="edit-note" class="form-control" placeholder="ระบุหมายเหตุเพิ่มเติม (ถ้ามี)" rows="3"></textarea>
                 </div>
                 <div style="text-align: right; margin-top: 20px;">
-                    <button type="button" class="btn-action" style="background:#e2e8f0; color:#475569;" onclick="closeEditModal()">ยกเลิก</button>
+                    <button type="button" class="btn-action" style="background:var(--border-color); color:var(--text-main);" onclick="closeEditModal()">ยกเลิก</button>
                     <button type="submit" class="btn-action" style="background:var(--accent); color:white;"><i class="fa-solid fa-save"></i> บันทึกการเปลี่ยนแปลง</button>
                 </div>
             </form>
@@ -812,13 +870,12 @@
             const tableWrapper = document.getElementById('table-wrapper-div');
             tbody.innerHTML = '';
 
-            // Handle filtering logic
             const filteredData = allBookingsData.filter(b => {
                 if (currentFilter === 'all') return true;
                 if (currentFilter === 'upcoming') {
-                    return b.status === 'confirmed'; // upcoming uses confirmed jobs
+                    return b.status === 'confirmed';
                 }
-                if (currentFilter === 'finance') return false; // Handled separately
+                if (currentFilter === 'finance') return false;
                 return b.status === currentFilter;
             });
 
@@ -836,7 +893,6 @@
                 }
             }
 
-            // Calculations
             let pendingCount = 0;
             let confirmedCount = 0;
             let confirmedDepositTotal = 0;
@@ -846,7 +902,7 @@
                 if (b.status === 'pending') pendingCount++;
                 if (b.status === 'confirmed') {
                     confirmedCount++;
-                    confirmedDepositTotal += 400; // 400 THB deposit per confirmed case
+                    confirmedDepositTotal += 400;
                 }
                 if (b.status === 'completed') {
                     completedRevenueTotal += (typeof b.price === 'number' ? b.price : parseFloat(b.price) || 0);
@@ -859,7 +915,6 @@
             document.getElementById('confirmed-bookings').textContent = confirmedCount;
             document.getElementById('total-deposit').textContent = (confirmedDepositTotal).toLocaleString() + ' บาท';
 
-            // Financial stats update
             document.getElementById('fin-deposit').textContent = (confirmedDepositTotal).toLocaleString() + ' บาท';
             document.getElementById('fin-completed').textContent = (completedRevenueTotal).toLocaleString() + ' บาท';
 
@@ -941,17 +996,17 @@
             if (viewType === 'all') {
                 titleElem.innerHTML = '<i class="fa-solid fa-chart-line" style="color: var(--accent);"></i> รายการจองทั้งหมดในระบบ';
             } else if (viewType === 'pending') {
-                titleElem.innerHTML = '<i class="fa-solid fa-clock-rotate-left" style="color: #f59e0b;"></i> รายการจอง: รอดำเนินการ';
+                titleElem.innerHTML = '<i class="fa-solid fa-clock-rotate-left" style="color: var(--warning);"></i> รายการจอง: รอดำเนินการ';
             } else if (viewType === 'confirmed') {
-                titleElem.innerHTML = '<i class="fa-solid fa-circle-check" style="color: #10b981;"></i> รายการจอง: ยืนยันแล้ว';
+                titleElem.innerHTML = '<i class="fa-solid fa-circle-check" style="color: var(--success);"></i> รายการจอง: ยืนยันแล้ว';
             } else if (viewType === 'upcoming') {
                 titleElem.innerHTML = '<i class="fa-solid fa-calendar-days" style="color: var(--accent);"></i> รายการจอง: งานที่กำลังจะมาถึง';
             } else if (viewType === 'completed') {
-                titleElem.innerHTML = '<i class="fa-solid fa-flag-checkered" style="color: #7e22ce;"></i> รายการจอง: งานที่จบแล้ว';
+                titleElem.innerHTML = '<i class="fa-solid fa-flag-checkered" style="color: #a855f7;"></i> รายการจอง: งานที่จบแล้ว';
             } else if (viewType === 'cancelled') {
-                titleElem.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i> รายการจอง: ยกเลิก';
+                titleElem.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color: var(--danger);"></i> รายการจอง: ยกเลิก';
             } else if (viewType === 'finance') {
-                titleElem.innerHTML = '<i class="fa-solid fa-wallet" style="color: #10b981;"></i> ข้อมูลและสรุปยอดการเงิน';
+                titleElem.innerHTML = '<i class="fa-solid fa-wallet" style="color: var(--success);"></i> ข้อมูลและสรุปยอดการเงิน';
             }
 
             renderTable();
@@ -1027,7 +1082,7 @@
             document.getElementById('edit-time').value = booking.bookingTime || booking.time || booking.travelTime || '';
             document.getElementById('edit-route').value = booking.route || '';
             document.getElementById('edit-car').value = booking.carType || booking.car || '';
-            document.getElementById('edit-note').value = booking.note || booking.message || booking.remark || booking.detail || '';
+            document.getElementById('edit-note').value = booking.notes || booking.note || booking.message || booking.remark || booking.detail || '';
 
             document.getElementById('editModal').style.display = 'flex';
         };
@@ -1081,7 +1136,8 @@
                 }
             }
 
-            const customerNote = booking.note || booking.message || booking.remark || booking.detail || 'ไม่มีหมายเหตุเพิ่มเติม';
+            const customerNote = booking.notes || booking.note || booking.message || booking.remark || booking.detail || 'ไม่มีหมายเหตุเพิ่มเติม';
+            
             const modalBody = document.getElementById('modalDetailBody');
             modalBody.innerHTML = `
                 <div class="detail-group"><strong>รหัสการจอง:</strong> <span style="color:var(--text-muted);">${booking.id}</span></div>
@@ -1095,13 +1151,13 @@
                 <div class="detail-group"><strong>เส้นทาง:</strong> <span>${booking.route || '-'}</span></div>
                 <div class="detail-group"><strong>รุ่นรถที่เลือก:</strong> <span>${booking.carType || booking.car || '-'}</span></div>
                 <div class="detail-group"><strong>ราคารวม:</strong> <span style="color:var(--success); font-weight:700;">${typeof booking.price === 'number' ? booking.price.toLocaleString() + ' THB' : (booking.price || '-')}</span></div>
-                <div class="detail-group" style="border-bottom: none; background: #f8fafc; padding: 12px; border-radius: 8px; margin-top: 15px;">
+                <div class="detail-group" style="border-bottom: none; background: var(--bg-main); padding: 12px; border-radius: 8px; margin-top: 15px;">
                     <strong style="display:block; margin-bottom:5px; color:var(--primary);"><i class="fa-solid fa-note-sticky"></i> หมายเหตุ / ข้อความจากลูกค้า:</strong>
-                    <span style="color: #475569; white-space: pre-wrap;">${customerNote}</span>
+                    <span style="color: var(--text-muted); white-space: pre-wrap;">${customerNote}</span>
                 </div>
             `;
             document.getElementById('detailModal').style.display = 'flex';
-        };
+        };  
 
         window.closeDetailModal = function() {
             document.getElementById('detailModal').style.display = 'none';
@@ -1127,7 +1183,28 @@
             }
         };
 
+        // ฟังก์ชันสลับโหมดสี Dark / Light Mode พร้อมบันทึกสถานะ
+        window.toggleTheme = function() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.className = 'fa-solid fa-moon';
+                localStorage.setItem('admin_theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fa-solid fa-sun';
+                localStorage.setItem('admin_theme', 'dark');
+            }
+        };
+
         window.addEventListener('DOMContentLoaded', () => {
+            // โหลดธีมที่ผู้ใช้เคยตั้งค่าไว้ล่าสุด
+            const savedTheme = localStorage.getItem('admin_theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            document.getElementById('theme-icon').className = savedTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
             loadAdminBookings();
         });
     </script>
