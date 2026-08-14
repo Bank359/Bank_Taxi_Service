@@ -1200,7 +1200,7 @@
         };
 
         window.addEventListener('DOMContentLoaded', () => {
-            // โหลดธีมที่ผู้ใช้เคยตั้งค่าไว้ล่าสุด
+            
             const savedTheme = localStorage.getItem('admin_theme') || 'light';
             document.body.setAttribute('data-theme', savedTheme);
             document.getElementById('theme-icon').className = savedTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
