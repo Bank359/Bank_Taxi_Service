@@ -12,21 +12,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // =========================================================
-    // ตรวจภาษา
+    // ตรวจภาษาและหน้าปัจจุบัน
     // =========================================================
 
     const currentFile =
         window.location.pathname
             .split("/")
             .pop()
-            .toLowerCase();
+            .toLowerCase() || "index.html";
 
     const isEnglish = currentFile.includes("-en.html");
 
-    // สร้างลิงก์สำหรับสลับภาษาข้ามไฟล์
-    const targetLangFile = currentFile.includes("-en.html")
-        ? currentFile.replace("-en.html", ".html")
-        : (currentFile === "" ? "index-en.html" : currentFile.replace(".html", "-en.html"));
+    // คำนวณชื่อไฟล์สำหรับสลับภาษาให้อยู่ที่หน้าเดิมเสมอ
+    let targetLangFile = "";
+    if (isEnglish) {
+        targetLangFile = currentFile.replace("-en.html", ".html");
+    } else {
+        targetLangFile = currentFile === "" || currentFile === "index.html" 
+            ? "index-en.html" 
+            : currentFile.replace(".html", "-en.html");
+    }
 
 
     // =========================================================
@@ -217,14 +222,14 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
 
-            <!-- แผงสลับภาษาด้านในเมนู 3 ขีด (มีลูกเล่นดีไซน์พรีเมียม) -->
+            <!-- แผงสลับภาษาด้านในเมนู 3 ขีด (เปลี่ยนภาษาบนหน้าเดิมอย่างแม่นยำ) -->
             <div class="bankDrawerLangBox">
                 <span class="bankLangTitle">${isEnglish ? "Language / ภาษา" : "ภาษา / Language"}</span>
                 <div class="bankLangSwitchGroup">
-                    <a href="${targetLangFile}" class="bankDrawerLangBtn ${!isEnglish ? 'active' : ''}">
+                    <a href="${currentFile.includes("-en.html") ? currentFile.replace("-en.html", ".html") : currentFile}" class="bankDrawerLangBtn ${!isEnglish ? 'active' : ''}" onclick="if(typeof setLanguage === 'function'){ setLanguage('th'); }">
                         🇹🇭 ไทย
                     </a>
-                    <a href="${targetLangFile}" class="bankDrawerLangBtn ${isEnglish ? 'active' : ''}">
+                    <a href="${currentFile.includes("-en.html") ? currentFile : (currentFile === "" || currentFile === "index.html" ? "index-en.html" : currentFile.replace(".html", "-en.html"))}" class="bankDrawerLangBtn ${isEnglish ? 'active' : ''}" onclick="if(typeof setLanguage === 'function'){ setLanguage('en'); }">
                         🇬🇧 English
                     </a>
                 </div>
@@ -325,6 +330,24 @@ document.addEventListener("DOMContentLoaded", () => {
         display: block !important;
     }
 
+    #bankMobileHeader,
+    #bankMobileDrawer,
+    #bankMobileOverlay {
+        display: none;
+    }
+
+    body.bank-mobile-mode #bankMobileHeader {
+        display: flex;
+    }
+
+    body.bank-mobile-mode #bankMobileDrawer {
+        display: flex;
+    }
+
+    body.bank-mobile-mode #bankMobileOverlay {
+        display: block;
+    }
+
     body.bank-mobile-mode {
         overflow-x: hidden !important;
         width: 100% !important;
@@ -353,7 +376,6 @@ document.addEventListener("DOMContentLoaded", () => {
         box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
     }
 
-    /* HAMBURGER BUTTON (จัดกึ่งกลางและมีอนิเมชันแปลงร่างเป็น X) */
     #bankMobileMenuButton {
         width: 42px;
         height: 42px;
@@ -384,7 +406,6 @@ document.addEventListener("DOMContentLoaded", () => {
         background: #f1f5f9;
     }
 
-    /* ลูกเล่นเมื่อเมนูเปิด: แปลงร่างเป็นกากบาท (X) สมจริง */
     body.bank-drawer-open #bankMobileMenuButton span:nth-child(1) {
         transform: translateY(7.5px) rotate(45deg);
     }
@@ -469,13 +490,20 @@ document.addEventListener("DOMContentLoaded", () => {
         box-shadow: 15px 0 45px rgba(15, 23, 42, 0.18);
         transform: translateX(-110%);
         transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-        display: flex;
         flex-direction: column;
         overflow-y: auto;
     }
 
     #bankMobileDrawer.bank-open {
         transform: translateX(0);
+    }
+
+    body.bank-drawer-open #bankMobileSwitch {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        transform: scale(0.8) !important;
+        transition: all 0.25s ease !important;
     }
 
     .bankDrawerHeader {
@@ -658,27 +686,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* ซ่อน Header เดิมของเว็บ */
-    body.bank-mobile-mode header:not(#bankMobileHeader) {
-        display: none !important;
-    }
-
-    body.bank-mobile-mode {
-        padding-top: 60px !important;
-    }
-
-
     /* ปุ่มสลับโหมดพรีเมียม (ซ้ายล่าง) */
-   /* =========================================================
-        ปุ่มสลับโหมดพรีเมียม (บังคับแสดงและล็อกตำแหน่งไม่ให้หลุดจอ)
-    ========================================================= */
     #bankMobileSwitch {
         position: fixed !important;
         left: 20px !important;
         bottom: 20px !important;
         width: 52px !important;
         height: 52px !important;
-        z-index: 99999 !important; /* ดึงให้อยู่ชั้นบนสุดไม่ให้มีอะไรบัง */
+        z-index: 99999 !important;
         border: 1px solid rgba(255, 255, 255, 0.35);
         border-radius: 50%;
         display: flex !important;
@@ -715,26 +730,6 @@ document.addEventListener("DOMContentLoaded", () => {
         border: 2px solid #ffffff;
         background: #22c55e;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    @media (min-width: 769px) {
-        #bankMobileHeader,
-        #bankMobileDrawer,
-        #bankTaxiMobileSystem {
-            display: block;
-        }
-
-        body.bank-mobile-mode #bankMobileHeader {
-            display: flex;
-        }
-
-        body.bank-mobile-mode #bankMobileDrawer {
-            display: flex;
-        }
-
-        body.bank-mobile-mode #bankMobileOverlay {
-            display: block;
-        }
     }
 
     `;

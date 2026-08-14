@@ -1051,6 +1051,381 @@ footer {
 }
 
     </style>
+       <style>
+    /* ==========================================================
+       1. ตัวแปรสีหลักของระบบ (Color Variables)
+       - คุมโทนสีดาร์กพรีเมียม (Dark Navy & Neon Sky Blue)
+       ================================================---------- */
+    :root {
+        --bg-main: #0f172a;          /* สีพื้นหลังหลักของเว็บไซต์ (Dark Slate) */
+        --bg-header: #0a0f1d;        /* สีพื้นหลังส่วน Header ให้เข้มข้นขึ้น */
+        --card-bg: #1e293b;          /* สีพื้นหลังสำหรับกล่องการ์ด / ตาราง / คอนเทนต์ */
+        --accent-glow: #38bdf8;      /* สีฟ้าเรืองแสงไฮไลต์ (Electric Sky Blue) */
+        --text-main: #f8fafc;        /* สีข้อความหลัก (ขาวสว่างอ่านง่าย) */
+        --text-muted: #94a3b8;       /* สีข้อความรอง / ข้อความปกติ (เทาอ่อน) */
+        --border-color: rgba(255, 255, 255, 0.08); /* สีเส้นขอบบางๆ สไตล์กระจก */
+    }
+
+    /* ตั้งค่าเริ่มต้นหน้าเว็บ */
+    body {
+        font-family: 'Sarabun', sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+    }
+
+    /* ==========================================================
+       2. ส่วน HEADER & NAVIGATION (แถบเมนูด้านบนสุด)
+       ========================================================== */
+    header {
+        background: var(--bg-header);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-wrapper {
+        position: relative;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 16px 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+   /* 🌐 ปุ่มเปลี่ยนภาษา: ดีไซน์ธงวงกลมสุดหรู (Circular Flag Icons) */
+    .language-switcher-top {
+        position: absolute;
+        top: 50%;
+        right: 30px;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        gap: 8px; /* เว้นระยะห่างระหว่างธง */
+        background: rgba(255, 255, 255, 0.05);
+        padding: 6px;
+        border-radius: 50px; /* ทรงแคปซูลยาวรองรับธงกลม */
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+    }
+
+    .lang-btn {
+        width: 32px; /* กำหนดขนาดวงกลม */
+        height: 32px;
+        border-radius: 50%; /* ตัดเป็นวงกลม */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 2px solid transparent;
+        color: #fff;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+    }
+
+    /* ใส่ภาพธงแทนพื้นหลัง (เปลี่ยน URL ได้ถ้ามีรูปธงส่วนตัว) */
+    .lang-btn[href*="index.html"]:not([href*="-en"]) {
+        background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Flag_of_Thailand.svg/1200px-Flag_of_Thailand.svg.png');
+    }
+
+    .lang-btn[href*="-en"] {
+        background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/1200px-Flag_of_the_United_Kingdom_%283-5%29.svg.png');
+    }
+
+    /* เอฟเฟกต์ตอน Hover ให้วงกลมขยายและเรืองแสง */
+    .lang-btn:hover {
+        transform: scale(1.15);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    /* สถานะ Active: เน้นขอบให้ชัดขึ้นเหมือนเหรียญพรีเมียม */
+    .lang-btn.active {
+        border-color: var(--accent-glow);
+        transform: scale(1.2);
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+    }
+
+    .lang-btn:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* ลูกเล่นเมื่อเลือกภาษานั้นๆ (Active) จะมีแสงเรืองแสงพรีเมียม */
+    .lang-btn.active {
+        background: linear-gradient(135deg, #0284c7, #38bdf8);
+        color: #ffffff;
+        font-weight: 700;
+        box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+
+    /* เมนูนำทางตรงกลาง */
+    .header-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .nav-menu {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-menu a {
+        position: relative;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        padding: 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: color 0.25s ease;
+    }
+
+    .nav-menu a i {
+        font-size: 0.9rem;
+        color: #64748b;
+        transition: color 0.25s ease;
+    }
+
+    .nav-menu a:hover {
+        color: #ffffff;
+    }
+
+    .nav-menu a:hover i {
+        color: var(--accent-glow);
+    }
+
+    .nav-menu a::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--accent-glow);
+        transition: width 0.3s ease;
+    }
+
+    .nav-menu a:hover::after {
+        width: 100%;
+    }
+
+    .nav-menu a.active {
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .nav-menu a.active i {
+        color: var(--accent-glow);
+    }
+
+    .nav-menu a.active::after {
+        width: 100%;
+        background: var(--accent-glow);
+    }
+
+
+    /* ==========================================================
+       4. ส่วนต้อนรับและข้อความแบรนด์ (Hero / Slogan Section)
+       - ปรับโทนสีข้อความให้กลมกลืน ดูแพง อ่านง่าย สบายตา
+       ========================================================== */
+    .brand-hero-section {
+        text-align: center;
+        padding: 40px 20px 20px 20px;
+    }
+
+    .brand-hero-section h2, .brand-title {
+        color: var(--text-main);
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .brand-hero-section p, .brand-subtitle {
+        color: var(--accent-glow); /* ปรับเป็นสีฟ้าเรืองแสงอ่อนๆ ให้ดูเด่นและเข้ากับธีมมืด */
+        font-size: 1.05rem;
+        font-weight: 400;
+        line-height: 1.6;
+        margin: 5px 0;
+        opacity: 0.95;
+    }
+
+    .brand-hero-section small, .brand-sub-desc {
+        color: var(--text-muted); /* สีเทาหม่นพรีเมียมสำหรับประโยคภาษาอังกฤษรอง */
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+    }
+
+/* ==========================================================
+       5. ส่วนตารางราคา / ประเภทรถ (Rates & Cars Section)
+       - ปรับให้โปร่งโล่ง ไม่มีบล็อกกล่องครอบ (Transparent & Clean)
+       ========================================================== */
+    .rates-section, .car-showcase-box {
+        background: transparent !important;   /* ตัดพื้นหลังออกให้โปร่งใส */
+        border: none !important;              /* เอาเส้นขอบออก */
+        border-radius: 0;                     /* เอาความโค้งออก */
+        padding: 10px 0;                      /* ปรับระยะห่างให้พอดี */
+        box-shadow: none !important;          /* เอาเงาออก */
+        transition: transform 0.3s ease;
+    }
+
+    .rates-section:hover, .car-showcase-box:hover {
+        transform: translateY(-2px);          /* ขยับลอยขึ้นเบาๆ เมื่อเอาเมาส์ชี้ */
+    }
+
+    /* ข้อความชื่อรุ่นรถ (เช่น Toyota Camry) */
+    .car-title, .rate-column h3 {
+        color: var(--text-main) !important;
+        font-size: 1.25rem;
+        font-weight: 700;
+        border-bottom: 2px solid var(--accent-glow) !important;
+        padding-bottom: 8px;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
+    /* ตารางราคาด้านใน */
+    .rate-column table td {
+        color: var(--text-muted);
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .rate-column table td:last-child {
+        color: var(--accent-glow); /* เน้นตัวเลขราคาให้มองเห็นชัดเจนสวยงาม */
+        font-weight: 700;
+    }
+
+
+    /* ==========================================================
+       6. ส่วนช่องทางการติดต่อสอบถาม / จองรถ (Contact Section)
+       - ปรับกล่อง Contact ให้เป็นทรงแคปซูลกระจกเงา (Glassmorphism)
+       ========================================================== */
+    .contact-card-section {
+        background: transparent;
+        padding: 30px 10px;
+        margin: 40px auto;
+        text-align: center;
+    }
+
+    .contact-card-section h3 {
+        color: var(--text-main);
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: rgba(30, 41, 59, 0.7); /* พื้นหลังกึ่งโปร่งใสสไตล์ดาร์กแก้ว */
+        backdrop-filter: blur(10px);
+        padding: 16px 25px;
+        border-radius: 50px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .contact-item:hover {
+        border-color: var(--accent-glow);
+        transform: translateY(-4px);
+        background: rgba(30, 41, 59, 0.95);
+        box-shadow: 0 12px 30px rgba(56, 189, 248, 0.15);
+    }
+
+    /* ไอคอนช่องทางติดต่อ */
+    .contact-icon {
+        width: 45px;
+        height: 45px;
+        background: rgba(56, 189, 248, 0.1);
+        color: var(--accent-glow);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .contact-item:hover .contact-icon {
+        background: var(--accent-glow);
+        color: var(--bg-main);
+    }
+
+    .contact-details h4 {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin: 0 0 3px 0;
+    }
+
+    .contact-details a, .contact-details p, .phone-link {
+        color: var(--text-main) !important;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .contact-details a:hover {
+        color: var(--accent-glow) !important;
+    }
+
+
+    /* ==========================================================
+       7. Responsive สำหรับหน้าจอโทรศัพท์มือถือ (Mobile View)
+       ========================================================== */
+    @media (max-width: 768px) {
+        .header-wrapper {
+            padding: 12px 15px;
+            justify-content: space-between;
+        }
+
+        .language-switcher-top {
+            position: static;
+            transform: none;
+        }
+
+        .header-container {
+            width: 100%;
+            overflow-x: auto;
+            justify-content: flex-start;
+            scrollbar-width: none;
+        }
+        .header-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-menu {
+            gap: 24px;
+        }
+
+        .nav-menu a {
+            font-size: 0.88rem;
+            white-space: nowrap;
+        }
+    }
+</style
 </head>
 <body>
     <header>
@@ -1072,16 +1447,12 @@ footer {
                 </nav>
             </div>
         </div>
-        <!-- ปุ่มสำหรับกดสลับโหมด -->
-<button id="toggleViewBtn" onclick="toggleMobileView()" style="position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
-    📱 สลับโหมดมือถือ
-</button>
     </header>
 
     <!-- พื้นที่ใส่โลโก้ -->
     <div class="logo-area">
         <a href="index-en.html">
-            <img src="https://cdn.discordapp.com/attachments/1519030341564764331/1536790163772940398/banktaxiservice-removebg-preview.png?ex=6a7caedf&is=6a7b5d5f&hm=d2f92a8938c5fba8a1c45aa0d7a9c8dda54949da973524910ed694a3c0c37fad&" alt="Bank Taxi Service Logo">
+            <img src="https://media.discordapp.net/attachments/1519030341564764331/1537119036796698634/banktaxiservice.png?ex=6a7de128&is=6a7c8fa8&hm=41f4791e92edf9c8ed1be75942318159da088dcf152b4f154d6ba565cd7b6838&=&format=webp&quality=lossless" alt="Bank Taxi Service Logo">
         </a>
     </div>
 
@@ -1090,7 +1461,7 @@ footer {
         <div class="cinema-slider" id="cinemaSlider ">
             <!-- รถคันที่ 1: Toyota Camry -->
             <div class="slide-item active">
-                <img src="https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=1200&q=80" alt="Toyota Camry">
+                <img src="https://media.discordapp.net/attachments/1519030341564764331/1536800493102305380/camry.png?ex=6a7d613d&is=6a7c0fbd&hm=871f1c9e944c904bb7b69aeccafc97bb0c91643f2b847a92dfc58f687e47378a&=&format=webp&quality=lossless" alt="Toyota Camry">
                 <div class="slide-caption">
                     <h3>Toyota Camry</h3>
                     <p>Luxury sedan, comfortable seating, ideal for 1-3 passengers with complete privacy</p>
@@ -1099,7 +1470,7 @@ footer {
 
             <!-- รถคันที่ 2: Toyota Fortuner -->
             <div class="slide-item">
-                <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1200&q=80" alt="Toyota Fortuner">
+                <img src="https://media.discordapp.net/attachments/1519030341564764331/1536800492712362034/fortuner.png?ex=6a7d613d&is=6a7c0fbd&hm=ad7b1af39808447e3ad960c615133a6878b04fbb3dcacaecbc24bd2bdb304916&=&format=webp&quality=lossless" alt="Toyota Fortuner">
                 <div class="slide-caption">
                     <h3>Toyota Fortuner</h3>
                     <p>Premium SUV, all-terrain capability, spacious interior accommodating 4-5 passengers</p>
@@ -1108,7 +1479,7 @@ footer {
 
             <!-- รถคันที่ 3: Toyota Commuter -->
             <div class="slide-item">
-                <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80" alt="Toyota Commuter">
+                <img src="https://media.discordapp.net/attachments/1519030341564764331/1536800492322029750/commuter.png?ex=6a7d613d&is=6a7c0fbd&hm=95085f88d84468eaab0dc7acfddfb863536caf089fd32ecd88c63e887deb8f12&=&format=webp&quality=lossless" alt="Toyota Commuter">
                 <div class="slide-caption">
                     <h3>Toyota Commuter</h3>
                     <p>VIP customized van, exceptionally comfortable, perfect for group travel of 9-10 passengers</p>
@@ -1127,20 +1498,20 @@ footer {
             </div>
         </div>
     </section>
-
-    <div class="container">
+<div class="container">
         <!-- สโลแกนหลัก -->
         <div style="text-align: center; margin-bottom: 10px;">
             <h1>Bank Taxi Service</h1>
             <div class="centered-flex-row" style="margin-top: 10px;">
-                <p style="font-size: 1.2rem; color: var(--primary); font-weight: bold; margin: 0;">
-                    "Flexible Timing, Personal Touch, Professional Service"
-                </p>
+               <p style="font-size: 1.2rem; color: #d4af37; font-weight: bold; margin: 0; text-shadow: 0 0 8px rgba(212, 175, 55, 0.4);">
+            "ยืดหยุ่นเวลา ใส่ใจในรายละเอียด บริการด้วยความเป็นมืออาชีพ"
+        </p>
             </div>
            
             <div class="centered-flex-row" style="margin-top: 5px;">
-                <p style="font-style: italic; color: #666; margin: 0;">Flexible Timing, Personal Touch, Professional Service.</p>
-            </div>
+<p style="font-style: italic; color: #94a3b8; margin: 0;">
+            Flexible Timing, Personal Touch, Professional Service.
+        </p>            </div>
         </div>
 
         <hr style="margin: 25px 0; border: 0; border-top: 1px solid #e2e8f0;">
@@ -1162,7 +1533,7 @@ footer {
         <!-- 1. Toyota Camry -->
         <div class="rate-column">
             <h3>Toyota Camry</h3>
-            <img src="https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=1200&q=80" alt="Toyota Camry">
+                      <img src="https://media.discordapp.net/attachments/1519030341564764331/1536800493102305380/camry.png?ex=6a7d613d&is=6a7c0fbd&hm=871f1c9e944c904bb7b69aeccafc97bb0c91643f2b847a92dfc58f687e47378a&=&format=webp&quality=lossless" alt="Toyota Camry">
             <p style="font-size: 0.9rem; color: #666; margin: 8px 0 15px 0;"><i class="fa-solid fa-users"></i> Capacity: 1-3 seats</p>
             <table>
                 <tr><td>Suvarnabhumi - Pattaya</td><td>1,000 THB</td></tr>
@@ -1187,7 +1558,7 @@ footer {
         <!-- 2. Toyota Fortuner -->
         <div class="rate-column">
             <h3>Toyota Fortuner</h3>
-            <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1200&q=80" alt="Toyota Fortuner">
+                           <img src="https://media.discordapp.net/attachments/1519030341564764331/1536800492712362034/fortuner.png?ex=6a7d613d&is=6a7c0fbd&hm=ad7b1af39808447e3ad960c615133a6878b04fbb3dcacaecbc24bd2bdb304916&=&format=webp&quality=lossless" alt="Toyota Fortuner">
             <p style="font-size: 0.9rem; color: #666; margin: 8px 0 15px 0;"><i class="fa-solid fa-users"></i> Capacity: 4-5 seats</p>
             <table>
                 <tr><td>Suvarnabhumi - Pattaya</td><td>1,400 THB</td></tr>
@@ -1212,7 +1583,7 @@ footer {
         <!-- 3. Toyota Commuter -->
         <div class="rate-column">
             <h3>Toyota Commuter</h3>
-            <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80" alt="Toyota Commuter">
+                <img src="https://media.discordapp.net/attachments/1519030341564764331/1536800492322029750/commuter.png?ex=6a7d613d&is=6a7c0fbd&hm=95085f88d84468eaab0dc7acfddfb863536caf089fd32ecd88c63e887deb8f12&=&format=webp&quality=lossless" alt="Toyota Commuter">
             <p style="font-size: 0.9rem; color: #666; margin: 8px 0 15px 0;"><i class="fa-solid fa-users"></i> Capacity: 9-10 seats</p>
             <table>
                 <tr><td>Suvarnabhumi - Pattaya</td><td>1,800 THB</td></tr>

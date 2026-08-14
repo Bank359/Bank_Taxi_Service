@@ -606,8 +606,499 @@
             .btn-booking-glow {
                 width: 100%;
             }
+            
+        /* 🚗 ขยายความกว้างและความสูงของรูปรถให้ใหญ่เต็มตาและกว้างขึ้นสะใจ */
+    .car-service-card {
+        display: flex;
+        gap: 45px;
+        align-items: center; 
+        background: transparent !important;
+        border: none !important;
+        margin-bottom: 60px;
+    }
+
+    .car-image-side {
+        flex: 1.5; /* ขยายความกว้างฝั่งรูปให้กว้างขึ้นกว่าเดิม (จาก 1.2 เป็น 1.5) */
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        border-radius: 16px;
+    }
+
+    .car-details-side {
+        flex: 1.2; /* ปรับฝั่งตารางราคาให้สมดุลกัน */
+    }
+
+    .car-image-side img {
+        width: 100% !important;
+        height: 420px !important;       /* เพิ่มความสูงขึ้นเป็น 420px ให้รูปใหญ่สะใจเต็มตา */
+        object-fit: cover !important;    /* ครอบเต็มกรอบสวยงาม */
+        border-radius: 16px !important;         
+        cursor: pointer !important;             
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6); 
+        border: 1px solid rgba(56, 189, 248, 0.3); 
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+        filter: brightness(0.96) contrast(1.05);
+    }
+
+    /* เอฟเฟกต์ซูมเมื่อเอาเมาส์ชี้ */
+    .car-image-side img:hover {
+        transform: scale(1.03);      
+        box-shadow: 0 20px 50px rgba(56, 189, 248, 0.4); 
+        filter: brightness(1.05) contrast(1.1);
+    }
+
+    /* หน้าจอมือถือ */
+    @media (max-width: 768px) {
+        .car-service-card {
+            flex-direction: column;
+            gap: 20px;
         }
+        .car-image-side img {
+            height: 280px !important; 
+        }
+    }
+    }
+        /* ===== รถ + ข้อมูลให้อยู่แนวนอน ===== */
+.car-service-card {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 45px !important;
+    width: 100% !important;
+}
+
+/* ฝั่งรูป */
+.car-image-side {
+    flex: 0 0 48% !important;
+    width: 48% !important;
+    max-width: 48% !important;
+    overflow: hidden !important;
+    border-radius: 16px !important;
+}
+
+.car-image-side img {
+    width: 100% !important;
+    height: 300px !important;
+    object-fit: contain !important;
+    display: block !important;
+}
+
+/* ฝั่งข้อมูล */
+.car-details-side {
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+/* มือถือให้กลับมาเรียงแนวตั้ง */
+@media (max-width: 768px) {
+    .car-service-card {
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+
+    .car-image-side {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: none !important;
+    }
+
+    .car-image-side img {
+        height: 260px !important;
+    }
+
+    .car-details-side {
+        width: 100% !important;
+    }
+}
     </style>
+    <style>
+    /* ==========================================================
+       1. ตัวแปรสีหลักของระบบ (Color Variables)
+       - คุมโทนสีดาร์กพรีเมียม (Dark Navy & Neon Sky Blue)
+       ================================================---------- */
+    :root {
+        --bg-main: #0f172a;          /* สีพื้นหลังหลักของเว็บไซต์ (Dark Slate) */
+        --bg-header: #0a0f1d;        /* สีพื้นหลังส่วน Header ให้เข้มข้นขึ้น */
+        --card-bg: #1e293b;          /* สีพื้นหลังสำหรับกล่องการ์ด / ตาราง / คอนเทนต์ */
+        --accent-glow: #38bdf8;      /* สีฟ้าเรืองแสงไฮไลต์ (Electric Sky Blue) */
+        --text-main: #f8fafc;        /* สีข้อความหลัก (ขาวสว่างอ่านง่าย) */
+        --text-muted: #94a3b8;       /* สีข้อความรอง / ข้อความปกติ (เทาอ่อน) */
+        --border-color: rgba(255, 255, 255, 0.08); /* สีเส้นขอบบางๆ สไตล์กระจก */
+    }
+
+    /* ตั้งค่าเริ่มต้นหน้าเว็บ */
+    body {
+        font-family: 'Sarabun', sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+    }
+
+    /* ==========================================================
+       2. ส่วน HEADER & NAVIGATION (แถบเมนูด้านบนสุด)
+       ========================================================== */
+    header {
+        background: var(--bg-header);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-wrapper {
+        position: relative;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 16px 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+   /* 🌐 ปุ่มเปลี่ยนภาษา: ดีไซน์ธงวงกลมสุดหรู (Circular Flag Icons) */
+    .language-switcher-top {
+        position: absolute;
+        top: 50%;
+        right: 30px;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        gap: 8px; /* เว้นระยะห่างระหว่างธง */
+        background: rgba(255, 255, 255, 0.05);
+        padding: 6px;
+        border-radius: 50px; /* ทรงแคปซูลยาวรองรับธงกลม */
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+    }
+
+    .lang-btn {
+        width: 32px; /* กำหนดขนาดวงกลม */
+        height: 32px;
+        border-radius: 50%; /* ตัดเป็นวงกลม */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 2px solid transparent;
+        color: #fff;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+    }
+
+    /* ใส่ภาพธงแทนพื้นหลัง (เปลี่ยน URL ได้ถ้ามีรูปธงส่วนตัว) */
+    .lang-btn[href*="index.html"]:not([href*="-en"]) {
+        background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Flag_of_Thailand.svg/1200px-Flag_of_Thailand.svg.png');
+    }
+
+    .lang-btn[href*="-en"] {
+        background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/1200px-Flag_of_the_United_Kingdom_%283-5%29.svg.png');
+    }
+
+    /* เอฟเฟกต์ตอน Hover ให้วงกลมขยายและเรืองแสง */
+    .lang-btn:hover {
+        transform: scale(1.15);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    /* สถานะ Active: เน้นขอบให้ชัดขึ้นเหมือนเหรียญพรีเมียม */
+    .lang-btn.active {
+        border-color: var(--accent-glow);
+        transform: scale(1.2);
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+    }
+
+    .lang-btn:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* ลูกเล่นเมื่อเลือกภาษานั้นๆ (Active) จะมีแสงเรืองแสงพรีเมียม */
+    .lang-btn.active {
+        background: linear-gradient(135deg, #0284c7, #38bdf8);
+        color: #ffffff;
+        font-weight: 700;
+        box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+
+    /* เมนูนำทางตรงกลาง */
+    .header-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .nav-menu {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-menu a {
+        position: relative;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        padding: 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: color 0.25s ease;
+    }
+
+    .nav-menu a i {
+        font-size: 0.9rem;
+        color: #64748b;
+        transition: color 0.25s ease;
+    }
+
+    .nav-menu a:hover {
+        color: #ffffff;
+    }
+
+    .nav-menu a:hover i {
+        color: var(--accent-glow);
+    }
+
+    .nav-menu a::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--accent-glow);
+        transition: width 0.3s ease;
+    }
+
+    .nav-menu a:hover::after {
+        width: 100%;
+    }
+
+    .nav-menu a.active {
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .nav-menu a.active i {
+        color: var(--accent-glow);
+    }
+
+    .nav-menu a.active::after {
+        width: 100%;
+        background: var(--accent-glow);
+    }
+
+
+    /* ==========================================================
+       4. ส่วนต้อนรับและข้อความแบรนด์ (Hero / Slogan Section)
+       - ปรับโทนสีข้อความให้กลมกลืน ดูแพง อ่านง่าย สบายตา
+       ========================================================== */
+    .brand-hero-section {
+        text-align: center;
+        padding: 40px 20px 20px 20px;
+    }
+
+    .brand-hero-section h2, .brand-title {
+        color: var(--text-main);
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .brand-hero-section p, .brand-subtitle {
+        color: var(--accent-glow); /* ปรับเป็นสีฟ้าเรืองแสงอ่อนๆ ให้ดูเด่นและเข้ากับธีมมืด */
+        font-size: 1.05rem;
+        font-weight: 400;
+        line-height: 1.6;
+        margin: 5px 0;
+        opacity: 0.95;
+    }
+
+    .brand-hero-section small, .brand-sub-desc {
+        color: var(--text-muted); /* สีเทาหม่นพรีเมียมสำหรับประโยคภาษาอังกฤษรอง */
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+    }
+
+/* ==========================================================
+       5. ส่วนตารางราคา / ประเภทรถ (Rates & Cars Section)
+       - ปรับให้โปร่งโล่ง ไม่มีบล็อกกล่องครอบ (Transparent & Clean)
+       ========================================================== */
+    .rates-section, .car-showcase-box {
+        background: transparent !important;   /* ตัดพื้นหลังออกให้โปร่งใส */
+        border: none !important;              /* เอาเส้นขอบออก */
+        border-radius: 0;                     /* เอาความโค้งออก */
+        padding: 10px 0;                      /* ปรับระยะห่างให้พอดี */
+        box-shadow: none !important;          /* เอาเงาออก */
+        transition: transform 0.3s ease;
+    }
+
+    .rates-section:hover, .car-showcase-box:hover {
+        transform: translateY(-2px);          /* ขยับลอยขึ้นเบาๆ เมื่อเอาเมาส์ชี้ */
+    }
+
+    /* ข้อความชื่อรุ่นรถ (เช่น Toyota Camry) */
+    .car-title, .rate-column h3 {
+        color: var(--text-main) !important;
+        font-size: 1.25rem;
+        font-weight: 700;
+        border-bottom: 2px solid var(--accent-glow) !important;
+        padding-bottom: 8px;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
+    /* ตารางราคาด้านใน */
+    .rate-column table td {
+        color: var(--text-muted);
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .rate-column table td:last-child {
+        color: var(--accent-glow); /* เน้นตัวเลขราคาให้มองเห็นชัดเจนสวยงาม */
+        font-weight: 700;
+    }
+
+
+    /* ==========================================================
+       6. ส่วนช่องทางการติดต่อสอบถาม / จองรถ (Contact Section)
+       - ปรับกล่อง Contact ให้เป็นทรงแคปซูลกระจกเงา (Glassmorphism)
+       ========================================================== */
+    .contact-card-section {
+        background: transparent;
+        padding: 30px 10px;
+        margin: 40px auto;
+        text-align: center;
+    }
+
+    .contact-card-section h3 {
+        color: var(--text-main);
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: rgba(30, 41, 59, 0.7); /* พื้นหลังกึ่งโปร่งใสสไตล์ดาร์กแก้ว */
+        backdrop-filter: blur(10px);
+        padding: 16px 25px;
+        border-radius: 50px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .contact-item:hover {
+        border-color: var(--accent-glow);
+        transform: translateY(-4px);
+        background: rgba(30, 41, 59, 0.95);
+        box-shadow: 0 12px 30px rgba(56, 189, 248, 0.15);
+    }
+
+    /* ไอคอนช่องทางติดต่อ */
+    .contact-icon {
+        width: 45px;
+        height: 45px;
+        background: rgba(56, 189, 248, 0.1);
+        color: var(--accent-glow);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .contact-item:hover .contact-icon {
+        background: var(--accent-glow);
+        color: var(--bg-main);
+    }
+
+    .contact-details h4 {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin: 0 0 3px 0;
+    }
+
+    .contact-details a, .contact-details p, .phone-link {
+        color: var(--text-main) !important;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .contact-details a:hover {
+        color: var(--accent-glow) !important;
+    }
+
+
+    /* ==========================================================
+       7. Responsive สำหรับหน้าจอโทรศัพท์มือถือ (Mobile View)
+       ========================================================== */
+    @media (max-width: 768px) {
+        .header-wrapper {
+            padding: 12px 15px;
+            justify-content: space-between;
+        }
+
+        .language-switcher-top {
+            position: static;
+            transform: none;
+        }
+
+        .header-container {
+            width: 100%;
+            overflow-x: auto;
+            justify-content: flex-start;
+            scrollbar-width: none;
+        }
+        .header-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-menu {
+            gap: 24px;
+        }
+
+        .nav-menu a {
+            font-size: 0.88rem;
+            white-space: nowrap;
+        }
+        
+
+    /* หน้าื้อมือถือ */
+    @media (max-width: 768px) {
+        .car-service-card {
+            flex-direction: column;
+            gap: 20px;
+        }
+        .car-image-side img {
+            height: 260px !important; /* ในมือถือปรับให้ใหญ่ขึ้นเช่นกัน */
+        }
+    }
+    }
+</style>
 </head>
 <body>
 
@@ -615,10 +1106,11 @@
     <header>
         <div class="header-wrapper">
             <!-- Language Switcher -->
-            <div class="language-switcher-top">
-                <a href="cars.html" class="lang-btn active">TH</a>
-                <a href="cars-en.html" class="lang-btn">EN</a>
-            </div>
+           <!-- ในหน้า cars.html -->
+<div class="language-switcher-top">
+    <a href="cars.html" class="lang-btn active">TH</a>
+    <a href="cars-en.html" class="lang-btn">EN</a>
+</div>
 
             <div class="header-container">
                 <nav class="nav-menu">
@@ -634,9 +1126,10 @@
 
     <!-- Main Container -->
     <div class="container">
-        <h1 style="color: var(--primary); text-align: center; margin-bottom: 10px;">ประเภทรถและอัตราค่าบริการ</h1>
-        <p style="text-align: center; color: #64748b; margin-bottom: 10px;">เลือกเลื่อนดูขบวนรถของเรา พร้อมรายละเอียดคนขับ จำนวนที่นั่ง และพื้นที่สัมภาระ</p>
-
+        <div class="container">
+    <h1 style="color: var(--text-main); text-align: center; margin-bottom: 10px; font-weight: 700; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);">ประเภทรถและอัตราค่าบริการ</h1>
+    <p style="text-align: center; color: var(--accent-glow); margin-bottom: 40px; font-size: 1.05rem;">เลือกเลื่อนดูขบวนรถของเรา พร้อมรายละเอียดคนขับ จำนวนที่นั่ง และพื้นที่สัมภาระ</p>
+</div>
         <!-- 🚗 แผงปุ่มตัวเลือกเลือกรุ่นรถ (Jump to Specific Car) -->
         <div class="car-selector-bar">
             <a href="#camry" class="car-select-btn"><i class="fa-solid fa-car"></i> Toyota Camry</a>
@@ -648,28 +1141,30 @@
         <section class="car-slider-section">
             <div class="cinema-slider" id="cinemaSlider">
                 <!-- รถคันที่ 1: Toyota Camry -->
-                <div class="slide-item active">
-                    <img src="https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=1200&q=80" alt="Toyota Camry">
-                    <div class="slide-caption">
-                        <h3>Toyota Camry</h3>
-                        <p>รถเก๋งซีดานหรู นั่งสบาย เหมาะสำหรับผู้บริหารและครอบครัวขนาดเล็ก (1-3 ที่นั่ง)</p>
-                    </div>
+            <div class="slide-item active">
+                <img src="https://media.discordapp.net/attachments/1519030341564764331/1536800493102305380/camry.png?ex=6a7d613d&is=6a7c0fbd&hm=871f1c9e944c904bb7b69aeccafc97bb0c91643f2b847a92dfc58f687e47378a&=&format=webp&quality=lossless" alt="Toyota Camry">
+                <div class="slide-caption">
+                    <h3>Toyota Camry</h3>
+                    <p>รถเก๋งซีดานหรู นั่งสบาย เหมาะสำหรับ 1-3 ที่นั่ง เดินทางเป็นส่วนตัว</p>
                 </div>
-                <!-- รถคันที่ 2: Toyota Fortuner -->
-                <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1200&q=80" alt="Toyota Fortuner">
-                    <div class="slide-caption">
-                        <h3>Toyota Fortuner</h3>
-                        <p>รถ SUV พรีเมียม ลุยได้ทุกเส้นทาง กว้างขวาง นั่งสบาย (4-5 ที่นั่ง)</p>
-                    </div>
+            </div>
+
+            <!-- รถคันที่ 2: Toyota Fortuner -->
+            <div class="slide-item">
+                <img src="https://media.discordapp.net/attachments/1519030341564764331/1536800492712362034/fortuner.png?ex=6a7d613d&is=6a7c0fbd&hm=ad7b1af39808447e3ad960c615133a6878b04fbb3dcacaecbc24bd2bdb304916&=&format=webp&quality=lossless" alt="Toyota Fortuner">
+                <div class="slide-caption">
+                    <h3>Toyota Fortuner</h3>
+                    <p>รถ SUV พรีเมียม ลุยได้ทุกเส้นทาง พื้นที่กว้างขวาง รองรับ 4-5 ที่นั่ง</p>
                 </div>
-                <!-- รถคันที่ 3: Toyota Commuter -->
-                <div class="slide-item">
-                    <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80" alt="Toyota Commuter">
-                    <div class="slide-caption">
-                        <h3>Toyota Commuter</h3>
-                        <p>รถตู้ VIP ปรับแต่งพิเศษ เหมาะสำหรับเดินทางเป็นคณะใหญ่ (9-10 ที่นั่ง)</p>
-                    </div>
+            </div>
+
+            <!-- รถคันที่ 3: Toyota Commuter -->
+            <div class="slide-item">
+                <img src="https://media.discordapp.net/attachments/1519030341564764331/1536800492322029750/commuter.png?ex=6a7d613d&is=6a7c0fbd&hm=95085f88d84468eaab0dc7acfddfb863536caf089fd32ecd88c63e887deb8f12&=&format=webp&quality=lossless" alt="Toyota Commuter">
+                <div class="slide-caption">
+                    <h3>Toyota Commuter</h3>
+                    <p>รถตู้ VIP ปรับแต่งพิเศษนั่งสบาย เหมาะสำหรับเดินทางเป็นหมู่คณะ 9-10 ที่นั่ง</p>
+                </div>
                 </div>
 
                 <!-- ปุ่มเลื่อน -->
@@ -686,120 +1181,148 @@
         </section>
 
         <!-- รายละเอียดแยกแต่ละรุ่นรถ พร้อมข้อมูลคนขับ จำนวนคน สัมภาระ -->
-        <div class="car-service-list">
+       <div class="container">
+    <h1 style="color: var(--text-main); text-align: center; margin-bottom: 10px; font-weight: 700;">บริการและอัตราค่าบริการตามประเภทรถ</h1>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px; font-size: 1.05rem;">เลือกประเภทรถที่ต้องการ พร้อมดูอัตราค่าบริการและเงื่อนไขในแต่ละเส้นทาง</p>
 
-            <!-- 1. Toyota Camry -->
-            <div class="car-service-card" id="camry">
-                <div class="car-image-side">
-                    <img src="https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=800&q=80" alt="Toyota Camry">
+    <!-- Car Service List (Modern Editorial Layout) -->
+    <div class="car-service-list">
+
+        <!-- 1. Toyota Camry -->
+        <div class="car-service-card" id="camry">
+            <div class="car-image-side">
+                <img src="https://cdn.discordapp.com/attachments/1519030341564764331/1537135800947576972/189baf8882a21c03.png?ex=6a7df0c5&is=6a7c9f45&hm=01bd284d309dd3fbe8465f50a65c489eccae2786c932c5c36f9c5d8f6c35c129&" alt="Toyota Camry" onclick="openImageModal(this.src)" style="cursor: pointer;" title="คลิกเพื่อขยายรูปภาพ">
+            </div>
+            <div class="car-details-side">
+                <div class="car-header-info">
+                    <h2>Toyota Camry</h2>
+                    <p style="color: var(--text-main); font-weight: 500;">รถเก๋ง สะอาด นั่งนุ่มนวล เป็นส่วนตัวสูงสุด</p>
+                    <!-- ข้อมูลคนขับ จำนวนคน สัมภาระ -->
+                    <div class="car-specs-info" style="margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap;">
+                        <span style="color: var(--accent-glow); font-size: 0.9rem;"><i class="fa-solid fa-user-tie" style="color: var(--accent-glow);"></i> คนขับมืออาชีพสุภาพ</span>
+                        <span style="color: var(--accent-glow); font-size: 0.9rem;"><i class="fa-solid fa-users" style="color: var(--accent-glow);"></i> 1-3 ที่นั่ง</span>
+                        <span style="color: var(--accent-glow); font-size: 0.9rem;"><i class="fa-solid fa-suitcase-rolling" style="color: var(--accent-glow);"></i> กระเป๋า 2-3 ใบ</span>
+                    </div>
+                    <table class="rate-table ">
+                        <tr><td>สุวรรณภูมิ - พัทยา</td><td>1,000 บาท</td></tr>
+                        <tr><td>สุวรรณภูมิ - หัวหิน</td><td>1,800 บาท</td></tr>
+                        <tr><td>สุวรรณภูมิ - ระยอง</td><td>1,800 บาท</td></tr>
+                        <tr><td>สุวรรณภูมิ - เกาะช้าง</td><td>3,500 บาท</td></tr>
+                        <tr><td>ดอนเมือง - พัทยา</td><td>1,400 บาท</td></tr>
+                        <tr><td>อู่ตะเภา - พัทยา</td><td>800 บาท</td></tr>
+                        <tr><td>พัทยา - กรุงเทพ</td><td>1,200 บาท</td></tr>
+                        <tr><td>พัทยา - ดอนเมือง</td><td>1,400 บาท</td></tr>
+                        <tr><td>พัทยา - สุวรรณภูมิ</td><td>1,000 บาท</td></tr>
+                        <tr><td>กรุงเทพ - พัทยา</td><td>1,200 บาท</td></tr>
+                    </table>
+                    <div class="price-condition"><i class="fa-solid fa-triangle-exclamation"></i> เงื่อนไขราคา: ยกเลิกไม่คืนค่ามัดจำ </div>
                 </div>
-                <div class="car-details-side">
-                    <div class="car-header-info">
-                        <h2>Toyota Camry</h2>
-                        <p>รถเก๋งซีดานหรูหรา สะอาด นั่งนุ่มนวล เป็นส่วนตัวสูงสุด</p>
-                        <!-- ข้อมูลคนขับ จำนวนคน สัมภาระ -->
-                        <div class="car-specs-info" style="margin-bottom: 15px;">
-                            <span><i class="fa-solid fa-user-tie" style="color: var(--secondary);"></i> คนขับมืออาชีพสุภาพ</span>
-                            <span><i class="fa-solid fa-users" style="color: var(--secondary);"></i> 1-3 ที่นั่ง</span>
-                            <span><i class="fa-solid fa-suitcase-rolling" style="color: var(--secondary);"></i> กระเป๋า 2-3 ใบ</span>
-                        </div>
-                        <table class="rate-table">
-                            <tr><td>สุวรรณภูมิ - พัทยา</td><td>1,000 บาท</td></tr>
-                            <tr><td>สุวรรณภูมิ - หัวหิน</td><td>1,800 บาท</td></tr>
-                            <tr><td>สุวรรณภูมิ - ระยอง</td><td>1,800 บาท</td></tr>
-                            <tr><td>สุวรรณภูมิ - เกาะช้าง</td><td>3,500 บาท</td></tr>
-                            <tr><td>ดอนเมือง - พัทยา</td><td>1,400 บาท</td></tr>
-                            <tr><td>อู่ตะเภา - พัทยา</td><td>800 บาท</td></tr>
-                            <tr><td>พัทยา - กรุงเทพ</td><td>1,200 บาท</td></tr>
-                            <tr><td>พัทยา - ดอนเมือง</td><td>1,400 บาท</td></tr>
-                            <tr><td>พัทยา - สุวรรณภูมิ</td><td>1,000 บาท</td></tr>
-                            <tr><td>กรุงเทพ - พัทยา</td><td>1,200 บาท</td></tr>
-                        </table>
-                        <div class="price-condition"><i class="fa-solid fa-triangle-exclamation"></i> เงื่อนไขราคา: ยกเลิกไม่คืนค่ามัดจำ | กรณีบวกเพิ่มคนละ 100-200 บาท</div>
+                <div class="car-card-footer">
+                    <div class="car-specs-info">
+                        <span style="color: #4ade80; font-weight: 600;"><i class="fa-solid fa-shield-halved" style="color: #4ade80;"></i> ปลอดภัยมั่นใจได้</span>
                     </div>
-                    <div class="car-card-footer">
-                        <div class="car-specs-info">
-                            <span><i class="fa-solid fa-shield-halved" style="color: #06c755;"></i> ปลอดภัยมั่นใจได้</span>
-                        </div>
-                        <a href="booking.html?car=camry" class="btn-booking-glow"><i class="fa-solid fa-calendar-check"></i> จอง Toyota Camry ทันที</a>
-                    </div>
+                    <a href="booking.html?car=camry" class="btn-booking-glow"><i class="fa-solid fa-calendar-check"></i> จอง Toyota Camry ทันที</a>
                 </div>
             </div>
+        </div>
 
-            <!-- 2. Toyota Fortuner -->
-            <div class="car-service-card" id="fortuner">
-                <div class="car-image-side">
-                    <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80" alt="Toyota Fortuner">
+        <!-- 2. Toyota Fortuner -->
+        <div class="car-service-card" id="fortuner">
+            <div class="car-image-side">
+                <img src="https://cdn.discordapp.com/attachments/1519030341564764331/1537137442199699518/fortuner.png?ex=6a7df24c&is=6a7ca0cc&hm=81cb4ab9926a5be7f26048784a0e4de500645bba26720514e0069a0aa9cae931&" alt="Toyota Fortuner" onclick="openImageModal(this.src)" style="cursor: pointer;" title="คลิกเพื่อขยายรูปภาพ">
+            </div>
+            <div class="car-details-side">
+                <div class="car-header-info">
+                    <h2>Toyota Fortuner</h2>
+                    <p style="color: var(--text-main); font-weight: 500;">พื้นที่ใช้สอยกว้างขวาง ลุยได้ทุกสภาพเส้นทาง</p>
+                    <!-- ข้อมูลคนขับ จำนวนคน สัมภาระ -->
+                    <div class="car-specs-info" style="margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap;">
+                        <span style="color: var(--accent-glow); font-size: 0.9rem;"><i class="fa-solid fa-user-tie" style="color: var(--accent-glow);"></i> คนขับมืออาชีพสุภาพ</span>
+                        <span style="color: var(--accent-glow); font-size: 0.9rem;"><i class="fa-solid fa-users" style="color: var(--accent-glow);"></i> 4-5 ที่นั่ง</span>
+                        <span style="color: var(--accent-glow); font-size: 0.9rem;"><i class="fa-solid fa-suitcase-rolling" style="color: var(--accent-glow);"></i> กระเป๋า 4-5 ใบ</span>
+                    </div>
+                    <table class="rate-table">
+                        <tr><td>สุวรรณภูมิ - พัทยา</td><td>1,400 บาท</td></tr>
+                        <tr><td>สุวรรณภูมิ - หัวหิน</td><td>2,500 บาท</td></tr>
+                        <tr><td>สุวรรณภูมิ - ระยอง</td><td>2,500 บาท</td></tr>
+                        <tr><td>สุวรรณภูมิ - เกาะช้าง</td><td>4,000 บาท</td></tr>
+                        <tr><td>ดอนเมือง - พัทยา</td><td>1,800 บาท</td></tr>
+                        <tr><td>อู่ตะเภา - พัทยา</td><td>1,200 บาท</td></tr>
+                        <tr><td>พัทยา - กรุงเทพ</td><td>1,600 บาท</td></tr>
+                        <tr><td>พัทยา - ดอนเมือง</td><td>1,800 บาท</td></tr>
+                        <tr><td>พัทยา - สุวรรณภูมิ</td><td>1,400 บาท</td></tr>
+                        <tr><td>กรุงเทพ - พัทยา</td><td>1,600 บาท</td></tr>
+                    </table>
+                    <div class="price-condition"><i class="fa-solid fa-triangle-exclamation"></i> เงื่อนไขราคา: ยกเลิกไม่คืนค่ามัดจำ</div>
                 </div>
-                <div class="car-details-side">
-                    <div class="car-header-info">
-                        <h2>Toyota Fortuner</h2>
-                        <p>รถยนต์ SUV พรีเมียม พื้นที่ใช้สอยกว้างขวาง ลุยได้ทุกสภาพเส้นทาง</p>
-                        <!-- ข้อมูลคนขับ จำนวนคน สัมภาระ -->
-                        <div class="car-specs-info" style="margin-bottom: 15px;">
-                            <span><i class="fa-solid fa-user-tie" style="color: var(--secondary);"></i> คนขับมืออาชีพสุภาพ</span>
-                            <span><i class="fa-solid fa-users" style="color: var(--secondary);"></i> 4-5 ที่นั่ง</span>
-                            <span><i class="fa-solid fa-suitcase-rolling" style="color: var(--secondary);"></i> กระเป๋า 4-5 ใบ</span>
-                        </div>
-                        <table class="rate-table">
-                            <tr><td>สุวรรณภูมิ - พัทยา</td><td>1,400 บาท</td></tr>
-                            <tr><td>สุวรรณภูมิ - หัวหิน</td><td>2,500 บาท</td></tr>
-                            <tr><td>สุวรรณภูมิ - ระยอง</td><td>2,500 บาท</td></tr>
-                            <tr><td>สุวรรณภูมิ - เกาะช้าง</td><td>4,000 บาท</td></tr>
-                            <tr><td>ดอนเมือง - พัทยา</td><td>1,800 บาท</td></tr>
-                            <tr><td>อู่ตะเภา - พัทยา</td><td>1,200 บาท</td></tr>
-                            <tr><td>พัทยา - กรุงเทพ</td><td>1,600 บาท</td></tr>
-                            <tr><td>พัทยา - ดอนเมือง</td><td>1,800 บาท</td></tr>
-                            <tr><td>พัทยา - สุวรรณภูมิ</td><td>1,400 บาท</td></tr>
-                            <tr><td>กรุงเทพ - พัทยา</td><td>1,600 บาท</td></tr>
-                        </table>
-                        <div class="price-condition"><i class="fa-solid fa-triangle-exclamation"></i> เงื่อนไขราคา: ยกเลิกไม่คืนค่ามัดจำ | กรณีบวกเพิ่มคนละ 100-200 บาท</div>
+                <div class="car-card-footer">
+                    <div class="car-specs-info">
+                        <span style="color: #4ade80; font-weight: 600;"><i class="fa-solid fa-shield-halved" style="color: #4ade80;"></i> ปลอดภัยมั่นใจได้</span>
                     </div>
-                    <div class="car-card-footer">
-                        <div class="car-specs-info">
-                            <span><i class="fa-solid fa-shield-halved" style="color: #06c755;"></i> ปลอดภัยมั่นใจได้</span>
-                        </div>
-                        <a href="booking.html?car=fortuner" class="btn-booking-glow"><i class="fa-solid fa-calendar-check"></i> จอง Toyota Fortuner ทันที</a>
-                    </div>
+                    <a href="booking.html?car=fortuner" class="btn-booking-glow"><i class="fa-solid fa-calendar-check"></i> จอง Toyota Fortuner ทันที</a>
                 </div>
             </div>
+        </div>
 
-            <!-- 3. Toyota Commuter -->
-            <div class="car-service-card" id="commuter">
-                <div class="car-image-side">
-                    <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80" alt="Toyota Commuter">
-                </div>
-                <div class="car-details-side">
-                    <div class="car-header-info">
-                        <h2>Toyota Commuter</h2>
-                        <p>รถตู้ VIP แต่งพิเศษ เบาะนั่งกว้างขวาง นั่งสบายตลอดการเดินทางหมู่คณะ</p>
-                        <!-- ข้อมูลคนขับ จำนวนคน สัมภาระ -->
-                        <div class="car-specs-info" style="margin-bottom: 15px;">
-                            <span><i class="fa-solid fa-user-tie" style="color: var(--secondary);"></i> คนขับมืออาชีพสุภาพ</span>
-                            <span><i class="fa-solid fa-users" style="color: var(--secondary);"></i> 9-10 ที่นั่ง</span>
-                            <span><i class="fa-solid fa-suitcase-rolling" style="color: var(--secondary);"></i> กระเป๋าใบใหญ่ 8-10 ใบ</span>
-                        </div>
-                        <table class="rate-table">
-                            <tr><td>สุวรรณภูมิ - พัทยา</td><td>1,800 บาท</td></tr>
-                            <tr><td>สุวรรณภูมิ - หัวหิน</td><td>2,700 บาท</td></tr>
-                            <tr><td>สุวรรณภูมิ - ระยอง</td><td>2,700 บาท</td></tr>
-                            <tr><td>สุวรรณภูมิ - เกาะช้าง</td><td>4,500 บาท</td></tr>
-                            <tr><td>ดอนเมือง - พัทยา</td><td>2,200 บาท</td></tr>
-                            <tr><td>อู่ตะเภา - พัทยา</td><td>1,300 บาท</td></tr>
-                            <tr><td>พัทยา - กรุงเทพ</td><td>1,900 บาท</td></tr>
-                            <tr><td>พัทยา - ดอนเมือง</td><td>2,200 บาท</td></tr>
-                            <tr><td>พัทยา - สุวรรณภูมิ</td><td>1,800 บาท</td></tr>
-                            <tr><td>กรุงเทพ - พัทยา</td><td>1,900 บาท</td></tr>
-                        </table>
-                        <div class="price-condition"><i class="fa-solid fa-triangle-exclamation"></i> เงื่อนไขราคา: ยกเลิกไม่คืนค่ามัดจำ | กรณีบวกเพิ่มคนละ 100-200 บาท</div>
+        <!-- 3. Toyota Commuter -->
+        <div class="car-service-card" id="commuter">
+            <div class="car-image-side">
+                <img src="https://cdn.discordapp.com/attachments/1519030341564764331/1537137225727344800/commuter.png?ex=6a7df219&is=6a7ca099&hm=3531da39b25cc03fc4a608f12b4ece98482bd9cc51d3799f209c37e56a246004&" alt="Toyota Commuter" onclick="openImageModal(this.src)" style="cursor: pointer;" title="คลิกเพื่อขยายรูปภาพ">
+            </div>
+            <div class="car-details-side">
+                <div class="car-header-info">
+                    <h2>Toyota Commuter</h2>
+                    <p style="color: var(--text-main); font-weight: 500;">รถตู้ VIP แต่งพิเศษ เบาะนั่งกว้างขวาง นั่งสบายตลอดการเดินทางหมู่คณะ</p>
+                    <!-- ข้อมูลคนขับ จำนวนคน สัมภาระ -->
+                    <div class="car-specs-info" style="margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap;">
+                        <span style="color: var(--accent-glow); font-size: 0.9rem;"><i class="fa-solid fa-user-tie" style="color: var(--accent-glow);"></i> คนขับมืออาชีพสุภาพ</span>
+                        <span style="color: var(--accent-glow); font-size: 0.9rem;"><i class="fa-solid fa-users" style="color: var(--accent-glow);"></i> 9-10 ที่นั่ง</span>
+                        <span style="color: var(--accent-glow); font-size: 0.9rem;"><i class="fa-solid fa-suitcase-rolling" style="color: var(--accent-glow);"></i> กระเป๋าใบใหญ่ 8-10 ใบ</span>
                     </div>
-                    <div class="car-card-footer">
-                        <div class="car-specs-info">
-                            <span><i class="fa-solid fa-shield-halved" style="color: #06c755;"></i> ปลอดภัยมั่นใจได้</span>
-                        </div>
-                        <a href="booking.html?car=commuter" class="btn-booking-glow"><i class="fa-solid fa-calendar-check"></i> จอง Toyota Commuter ทันที</a>
-                    </div>
+                    <table class="rate-table">
+                        <tr><td>สุวรรณภูมิ - พัทยา</td><td>1,800 บาท</td></tr>
+                        <tr><td>สุวรรณภูมิ - หัวหิน</td><td>2,700 บาท</td></tr>
+                        <tr><td>สุวรรณภูมิ - ระยอง</td><td>2,700 บาท</td></tr>
+                        <tr><td>สุวรรณภูมิ - เกาะช้าง</td><td>4,500 บาท</td></tr>
+                        <tr><td>ดอนเมือง - พัทยา</td><td>2,200 บาท</td></tr>
+                        <tr><td>อู่ตะเภา - พัทยา</td><td>1,300 บาท</td></tr>
+                        <tr><td>พัทยา - กรุงเทพ</td><td>1,900 บาท</td></tr>
+                        <tr><td>พัทยา - ดอนเมือง</td><td>2,200 บาท</td></tr>
+                        <tr><td>พัทยา - สุวรรณภูมิ</td><td>1,800 บาท</td></tr>
+                        <tr><td>กรุงเทพ - พัทยา</td><td>1,900 บาท</td></tr>
+                    </table>
+                    <div class="price-condition"><i class="fa-solid fa-triangle-exclamation"></i> เงื่อนไขราคา: ยกเลิกไม่คืนค่ามัดจำ</div>
                 </div>
+                <div class="car-card-footer">
+                    <div class="car-specs-info">
+                        <span style="color: #4ade80; font-weight: 600;"><i class="fa-solid fa-shield-halved" style="color: #4ade80;"></i> ปลอดภัยมั่นใจได้</span>
+                    </div>
+                    <a href="booking.html?car=commuter" class="btn-booking-glow"><i class="fa-solid fa-calendar-check"></i> จอง Toyota Commuter ทันที</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 🖼️ Modal สำหรับขยายรูปภาพ -->
+<div id="imageModal" onclick="closeImageModal()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:99999; justify-content:center; align-items:center; cursor:pointer; padding:20px; box-sizing:border-box;">
+    <span style="position:absolute; top:20px; right:30px; color:#fff; font-size:40px; font-weight:bold; cursor:pointer;">&times;</span>
+    <img id="modalImg" src="" alt="Zoomed Car Image" style="max-width:90%; max-height:85vh; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.5); object-fit:contain; border:1px solid rgba(255,255,255,0.2);">
+</div>
+
+<script>
+    function openImageModal(imgSrc) {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImg');
+        modal.style.display = 'flex';
+        modalImg.src = imgSrc;
+    }
+
+    function closeImageModal() {
+        document.getElementById('imageModal').style.display = 'none';
+    }
+</script>
             </div>
 
         </div>
@@ -877,5 +1400,6 @@
         }
     </script>
     <script src="mobile-switcher.js"></script>
+    
 </body>
 </html>
