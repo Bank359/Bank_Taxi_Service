@@ -5,110 +5,285 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Bank Taxi Service</title>
     <!-- Google Fonts - Sarabun -->
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #0b3c5d;
-            --secondary: #328cc1;
-            --accent: #38bdf8;
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #0284c7;
+            --accent-gradient: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-main: #f8fafc;
             --card-bg: #ffffff;
-            --text-main: #1e293b;
+            --text-main: #334155;
             --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --sidebar-width: 280px;
+            --sidebar-width-collapsed: 80px;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --shadow-subtle: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 10px 30px -4px rgba(2, 132, 199, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.25s ease;
         }
 
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #f1f5f9;
+            background-color: var(--bg-main);
             margin: 0;
-            padding: 30px 20px;
+            padding: 0;
             color: var(--text-main);
+            overflow-x: hidden;
         }
 
-        .admin-wrapper {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* Layout Container */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
         }
 
-        /* Header Bar */
-        .admin-header {
-            background: linear-gradient(135deg, #0b3c5d, #142834);
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #0b1329 0%, #111c38 100%);
+            color: white;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            box-shadow: 4px 0 25px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-brand {
+            font-size: 1.4rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 40px;
             color: #ffffff;
-            padding: 20px 30px;
+            text-decoration: none;
+            padding: 0 10px;
+        }
+
+        .sidebar-brand .brand-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--accent-gradient);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 8px 16px rgba(2, 132, 199, 0.3);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu a {
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-menu a .menu-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .sidebar-menu a .menu-left i {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            transform: translateX(4px);
+        }
+
+        .sidebar-menu a.active {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
+        }
+
+        .menu-badge {
+            background: #ef4444;
+            color: white;
+            padding: 3px 9px;
             border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .sidebar-footer {
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: none;
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger);
+            color: white;
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Main Content Wrapper */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            padding: 35px;
+            max-width: calc(100% - var(--sidebar-width));
+        }
+
+        /* Top Header Bar */
+        .admin-header {
+            background: var(--card-bg);
+            padding: 20px 30px;
+            border-radius: var(--radius-lg);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 10px 25px rgba(11, 60, 93, 0.15);
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-color);
             margin-bottom: 30px;
         }
 
         .admin-header h1 {
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
+            color: var(--primary);
             display: flex;
             align-items: center;
             gap: 12px;
+            font-weight: 700;
         }
 
-        .logout-btn {
-            background: #e11d48;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.95rem;
-            transition: 0.3s;
+        .admin-profile {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 14px;
         }
 
-        .logout-btn:hover {
-            background: #be123c;
-            transform: translateY(-2px);
+        .admin-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--accent-gradient);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
         }
 
-        /* Stats Cards (แผงสรุปภาพรวม) */
+        /* Statistics Cards Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
             margin-bottom: 35px;
         }
 
         .stat-card {
             background: var(--card-bg);
             padding: 25px;
-            border-radius: 18px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.04);
-            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0;
+            width: 4px;
+            background: var(--accent);
+            opacity: 0;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: #bae6fd;
+        }
+
+        .stat-card:hover::after {
+            opacity: 1;
         }
 
         .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 14px;
+            width: 65px;
+            height: 65px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.6rem;
         }
 
-        .stat-icon.blue { background: rgba(50, 140, 193, 0.1); color: var(--secondary); }
-        .stat-icon.yellow { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
-        .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .stat-icon.blue { background: rgba(2, 132, 199, 0.1); color: var(--accent); }
+        .stat-icon.yellow { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 
         .stat-info h3 {
-            margin: 0 0 5px 0;
-            font-size: 0.95rem;
+            margin: 0 0 6px 0;
+            font-size: 0.9rem;
             color: var(--text-muted);
+            font-weight: 600;
         }
 
         .stat-info p {
@@ -118,72 +293,72 @@
             color: var(--primary);
         }
 
-        /* Main Content Card */
+        /* Content Card & Table */
         .content-card {
             background: var(--card-bg);
-            border-radius: 20px;
+            border-radius: var(--radius-lg);
             padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-color);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .content-card h2 {
-            margin-top: 0;
-            margin-bottom: 20px;
+            margin: 0;
             color: var(--primary);
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-weight: 700;
         }
 
-        /* Table Design */
         .table-responsive {
             overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
+            white-space: nowrap;
         }
 
         th {
             background: #f8fafc;
             color: var(--primary);
-            padding: 14px 16px;
+            padding: 16px 18px;
             font-weight: 700;
-            border-bottom: 2px solid #e2e8f0;
+            border-bottom: 2px solid var(--border-color);
         }
 
         td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 18px;
+            border-bottom: 1px solid #f1f5f9;
             color: #334155;
             vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
         }
 
         tr:hover td {
             background-color: #f8fafc;
         }
 
-        /* Status Badges */
-        .badge {
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .badge.pending { background: #fef3c7; color: #d97706; }
-        .badge.confirmed { background: #d1fae5; color: #059669; }
-        .badge.cancelled { background: #fee2e2; color: #dc2626; }
-
-        /* Action Buttons */
+        /* Action Buttons & Status */
         .action-btns {
             display: flex;
             gap: 8px;
@@ -191,7 +366,7 @@
         }
 
         .btn-action {
-            padding: 6px 12px;
+            padding: 7px 14px;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
@@ -200,8 +375,7 @@
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            transition: 0.2s;
+            gap: 6px;
         }
 
         .btn-slip { background: #e0f2fe; color: #0284c7; }
@@ -213,14 +387,15 @@
         .btn-delete { background: #fee2e2; color: #dc2626; }
         .btn-delete:hover { background: #fecaca; }
 
-        /* Status Select Dropdown */
         .status-select {
-            padding: 6px 10px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
             border: 1px solid #cbd5e1;
             font-family: 'Sarabun', sans-serif;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             cursor: pointer;
+            background-color: #ffffff;
+            font-weight: 700;
         }
 
         /* Modal สำหรับดูสลิป */
@@ -228,399 +403,207 @@
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(15, 23, 42, 0.75);
             z-index: 9999;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
 
         .modal-content {
             background: #ffffff;
-            padding: 25px;
-            border-radius: 20px;
-            max-width: 400px;
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            max-width: 450px;
+            width: 90%;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             position: relative;
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .modal-content img {
             width: 100%;
-            max-height: 400px;
+            max-height: 420px;
             object-fit: contain;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
             margin-top: 15px;
+            background: #f8fafc;
         }
 
         .close-modal {
             position: absolute;
-            top: 15px; right: 20px;
-            font-size: 1.5rem;
+            top: 18px; right: 22px;
+            font-size: 1.6rem;
             cursor: pointer;
-            color: #64748b;
+            color: var(--text-muted);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #f1f5f9;
         }
 
-        @media (max-width: 768px) {
-            .admin-header { flex-direction: column; gap: 15px; text-align: center; }
-            body { padding: 15px 10px; }
+        .close-modal:hover {
+            background: #e2e8f0;
+            color: var(--danger);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 80px;
+                padding: 20px 12px;
+            }
+            .sidebar-brand span, .sidebar-menu span, .sidebar-footer span {
+                display: none;
+            }
+            .sidebar-brand {
+                justify-content: center;
+                margin-bottom: 25px;
+            }
+            .main-wrapper {
+                margin-left: 80px;
+                max-width: calc(100% - 80px);
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .sidebar {
+                display: none;
+            }
+            .main-wrapper {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 15px;
+            }
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="admin-wrapper">
-        
-        <!-- Header -->
-        <div class="admin-header">
-            <h1><i class="fa-solid fa-gauge-high"></i> แผงควบคุมแอดมิน (Admin Dashboard)</h1>
-            <button class="logout-btn" onclick="logoutAdmin()"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</button>
-        </div>
-
-        <!-- Overview Stats (แผงสรุปภาพรวม) -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon blue"><i class="fa-solid fa-calendar-check"></i></div>
-                <div class="stat-info">
-                    <h3>ยอดจองทั้งหมด</h3>
-                    <p id="total-bookings">0</p>
-                </div>
+    <div class="admin-layout">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div>
+                <a href="#" class="sidebar-brand">
+                    <div class="brand-icon"><i class="fa-solid fa-taxi"></i></div>
+                    <span>Bank Taxi</span>
+                </a>
+                <ul class="sidebar-menu">
+                    <li><a href="#" id="menu-all" class="active" onclick="switchView('all', this)"><div class="menu-left"><i class="fa-solid fa-chart-pie"></i> <span>ภาพรวมทั้งหมด</span></div></a></li>
+                    <li><a href="#" id="menu-pending" onclick="switchView('pending', this)"><div class="menu-left"><i class="fa-solid fa-clock-rotate-left"></i> <span>รอดำเนินการ</span></div><span class="menu-badge" id="badge-pending">0</span></a></li>
+                    <li><a href="#" id="menu-confirmed" onclick="switchView('confirmed', this)"><div class="menu-left"><i class="fa-solid fa-circle-check"></i> <span>ยืนยันแล้ว</span></div></a></li>
+                    <li><a href="#" id="menu-cancelled" onclick="switchView('cancelled', this)"><div class="menu-left"><i class="fa-solid fa-circle-xmark"></i> <span>ยกเลิก</span></div></a></li>
+                    <li style="margin-top: 20px;"><a href="index.html" target="_blank"><div class="menu-left"><i class="fa-solid fa-globe"></i> <span>ดูเว็บไซต์หลัก</span></div></a></li>
+                </ul>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon yellow"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                <div class="stat-info">
-                    <h3>รอดำเนินการ (รอตรวจสลิป)</h3>
-                    <p id="pending-bookings">0</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon green"><i class="fa-solid fa-wallet"></i></div>
-                <div class="stat-info">
-                    <h3>รายได้มัดจำรวม (100.-)</h3>
-                    <p id="total-deposit">0 บาท</p>
-                </div>
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logoutAdmin()">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span>ออกจากระบบ</span>
+                </button>
             </div>
         </div>
 
-        <!-- Booking Table (ตารางรายการจอง) -->
-        <div class="content-card">
-            <h2><i class="fa-solid fa-list-check"></i> รายการจองของลูกค้าล่าสุด</h2>
-            
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>วันที่/เวลา</th>
-                            <th>ชื่อลูกค้า & เบอร์โทร</th>
-                            <th>เส้นทาง & รุ่นรถ</th>
-                            <th>ราคารวม</th>
-                            <th>สถานะการจอง</th>
-                            <th>หลักฐานสลิป</th>
-                            <th>จัดการข้อมูล</th>
-                        </tr>
-                    </thead>
-                    <tbody id="booking-table-body">
-                        <!-- ข้อมูลจะถูกดึงมาแสดงตรงนี้ด้วย JavaScript -->
-                    </tbody>
-                </table>
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            <!-- Header Bar -->
+            <div class="admin-header">
+                <h1 id="view-title"><i class="fa-solid fa-chart-line" style="color: var(--accent);"></i> รายการจองทั้งหมดในระบบ</h1>
+                <div class="admin-profile">
+                    <div class="admin-avatar">A</div>
+                    <div style="font-size: 0.9rem; line-height: 1.3;">
+                        <strong>ผู้ดูแลระบบ</strong><br>
+                        <span style="color: #10b981; font-size: 0.78rem; font-weight: 700;"><i class="fa-solid fa-circle" style="font-size: 6px;"></i> ระบบออนไลน์</span>
+                    </div>
+                </div>
             </div>
-            
-            <div id="empty-state" style="text-align: center; padding: 40px; color: var(--text-muted); display: none;">
-                <i class="fa-solid fa-folder-open" style="font-size: 3rem; margin-bottom: 10px; color: #cbd5e1;"></i>
-                <p>ยังไม่มีรายการจองในระบบ</p>
+
+            <!-- Overview Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="fa-solid fa-calendar-check"></i></div>
+                    <div class="stat-info">
+                        <h3>ยอดจองทั้งหมด</h3>
+                        <p id="total-bookings">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon yellow"><i class="fa-solid fa-clock"></i></div>
+                    <div class="stat-info">
+                        <h3>รอดำเนินการ (รอสลิป)</h3>
+                        <p id="pending-bookings">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fa-solid fa-wallet"></i></div>
+                    <div class="stat-info">
+                        <h3>รายได้มัดจำรวม (400.-/เคส)</h3>
+                        <p id="total-deposit">0 บาท</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Booking Table Card -->
+            <div class="content-card">
+                <div class="content-header">
+                    <h2><i class="fa-solid fa-list-check" style="color: var(--accent);"></i> ตารางรายการจองรถแท็กซี่</h2>
+                </div>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>วันที่/เวลาจอง</th>
+                                <th>ชื่อลูกค้า & ช่องทางติดต่อ</th>
+                                <th>เส้นทาง & รุ่นรถ</th>
+                                <th>ราคารวม</th>
+                                <th>สถานะการจอง</th>
+                                <th>หลักฐานสลิป</th>
+                                <th>จัดการข้อมูล</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booking-table-body">
+                            <!-- ข้อมูลจะถูกโหลดแบบไดนามิกผ่าน Firebase -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="empty-state" style="text-align: center; padding: 50px 20px; color: var(--text-muted); display: none;">
+                    <i class="fa-solid fa-folder-open" style="font-size: 3.5rem; margin-bottom: 15px; color: #cbd5e1;"></i>
+                    <p style="font-size: 1.1rem; font-weight: 600;">ยังไม่มีรายการจองในหมวดหมู่นี้</p>
+                </div>
             </div>
         </div>
-
     </div>
 
     <!-- Modal สำหรับแสดงรูปสลิป -->
     <div id="slipModal" onclick="closeSlipModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <span class="close-modal" onclick="closeSlipModal()">&times;</span>
-            <h3 style="margin-top:0; color:var(--primary);">หลักฐานการโอนเงิน (สลิปมัดจำ)</h3>
+            <h3 style="margin-top:0; color:var(--primary); font-size:1.2rem;"><i class="fa-solid fa-receipt"></i> หลักฐานการโอนเงิน (สลิปมัดจำ)</h3>
             <img id="modalSlipImg" src="" alt="Slip Image">
         </div>
     </div>
 
-    <!-- Script สำหรับจัดการระบบแอดมิน -->
-    <script>
-        // โหลดข้อมูลจำลองหรือข้อมูลจริงจาก localStorage ที่ลูกค้าจองเข้ามา
-        let bookings = JSON.parse(localStorage.getItem('bankTaxiBookings')) || [
-            // ข้อมูลตัวอย่างเริ่มต้น (สามารถลบออกได้)
-            {
-                id: 1,
-                date: "2026-06-06 14:30",
-                name: "คุณสมชาย ใจดี",
-                phone: "0948798228",
-                lineid: "@somchai",
-                email: "somchai@example.com",
-                car: "Toyota Camry",
-                route: "สุวรรณภูมิ - พัทยา",
-                price: "1,000 บาท",
-                status: "pending", // pending, confirmed, cancelled
-                slipImg: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=400&q=80"
-            }
-        ];
-
-        function renderDashboard() {
-            const tbody = document.getElementById('booking-table-body');
-            const emptyState = document.getElementById('empty-state');
-            tbody.innerHTML = '';
-
-            if (bookings.length === 0) {
-                emptyState.style.display = 'block';
-                document.getElementById('total-bookings').textContent = '0';
-                document.getElementById('pending-bookings').textContent = '0';
-                document.getElementById('total-deposit').textContent = '0 บาท';
-                return;
-            }
-
-            emptyState.style.display = 'none';
-
-            let pendingCount = 0;
-            let totalDeposit = bookings.length * 100; // สมมติมัดจำเคสละ 100 บาท
-
-            bookings.forEach((b, index) => {
-                if (b.status === 'pending') pendingCount++;
-
-                let badgeClass = 'pending';
-                let badgeText = 'รอดำเนินการ';
-                if (b.status === 'confirmed') { badgeClass = 'confirmed'; badgeText = 'ยืนยันแล้ว'; }
-                if (b.status === 'cancelled') { badgeClass = 'cancelled'; badgeText = 'ยกเลิก'; }
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><small style="color:var(--text-muted);">${b.date}</small></td>
-                    <td>
-                        <strong>${b.name}</strong><br>
-                        <span style="font-size:0.85rem; color:var(--text-muted);">${b.phone}</span><br>
-                        <a href="https://line.me/ti/p/~${b.lineid}" target="_blank" class="btn-action btn-line" style="margin-top:4px;"><i class="fa-brands fa-line"></i> ${b.lineid}</a>
-                    </td>
-                    <td>
-                        <strong>${b.car}</strong><br>
-                        <span style="font-size:0.85rem; color:var(--secondary);">${b.route}</span>
-                    </td>
-                    <td><strong>${b.price}</strong></td>
-                    <td>
-                        <select class="status-select" onchange="updateStatus(${index}, this.value)">
-                            <option value="pending" ${b.status === 'pending' ? 'selected' : ''}>🟡 รอดำเนินการ</option>
-                            <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>🟢 ยืนยันการจอง</option>
-                            <option value="cancelled" ${b.status === 'cancelled' ? 'selected' : ''}>🔴 ยกเลิก</option>
-                        </select>
-                    </td>
-                    <td>
-                        <button class="btn-action btn-slip" onclick="openSlipModal('${b.slipImg || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=400&q=80'}')">
-                            <i class="fa-solid fa-receipt"></i> ดูสลิป
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn-action btn-delete" onclick="deleteBooking(${index})">
-                            <i class="fa-solid fa-trash"></i> ลบ
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            // อัปเดตตัวเลขสถิติภาพรวม
-            document.getElementById('total-bookings').textContent = bookings.length;
-            document.getElementById('pending-bookings').textContent = pendingCount;
-            document.getElementById('total-deposit').textContent = totalDeposit.toLocaleString() + ' บาท';
-        }
-
-        // ฟังก์ชันเปลี่ยนสถานะ
-        function updateStatus(index, newStatus) {
-            bookings[index].status = newStatus;
-            localStorage.setItem('bankTaxiBookings', JSON.stringify(bookings));
-            renderDashboard();
-        }
-
-        // ฟังก์ชันลบข้อมูลการจอง
-        function deleteBooking(index) {
-            if (confirm('คุณต้องการลบรายการจองนี้ออกจากระบบใช่หรือไม่?')) {
-                bookings.splice(index, 1);
-                localStorage.setItem('bankTaxiBookings', JSON.stringify(bookings));
-                renderDashboard();
-            }
-        }
-
-        // ฟังก์ชันเปิด/ปิด Modal ดูสลิป
-        function openSlipModal(imgSrc) {
-            document.getElementById('modalSlipImg').src = imgSrc;
-            document.getElementById('slipModal').style.display = 'flex';
-        }
-
-        function closeSlipModal() {
-            document.getElementById('slipModal').style.display = 'none';
-        }
-
-        // ฟังก์ชันออกจากระบบ
-        function logoutAdmin() {
-            window.location.href = "index.html";
-        }
-
-        // โหลดข้อมูลเมื่อเปิดหน้าแอดมิน
-        window.addEventListener('DOMContentLoaded', () => {
-            renderDashboard();
-        });
-    </script>
-    <!-- เรียกใช้งาน Firebase SDK ผ่าน CDN -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-  // 1. นำ config ของคุณมาใส่ตรงนี้ (ชุดเดียวกับหน้าจอง)
-  const firebaseConfig = {
-    apiKey: "AIzaSyASv5AeTc3XJjILvvU9ca7sE27901Zt9aU",
-    authDomain: "bank-taxi-service.firebaseapp.com",
-    projectId: "bank-taxi-service",
-    storageBucket: "bank-taxi-service.appspot.com",
-    messagingSenderId: "12836327344",
-    appId: "1:12836327344:web:ab2255c4ca38beda763435",
-    measurementId: "G-N2LDVWQ57M"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // 2. ฟังก์ชันดึงข้อมูลการจองทั้งหมดจาก Firestore มาแสดงในตารางแอดมิน
-  async function loadAdminBookings() {
-      const tbody = document.getElementById('booking-table-body');
-      const emptyState = document.getElementById('empty-state');
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">กำลังโหลดข้อมูลจาก Cloud...</td></tr>';
-
-      try {
-          const querySnapshot = await getDocs(collection(db, "bookings"));
-          tbody.innerHTML = '';
-
-          if (querySnapshot.empty) {
-              emptyState.style.display = 'block';
-              document.getElementById('total-bookings').textContent = '0';
-              document.getElementById('pending-bookings').textContent = '0';
-              document.getElementById('total-deposit').textContent = '0 บาท';
-              return;
-          }
-
-          emptyState.style.display = 'none';
-          let totalCount = 0;
-          let pendingCount = 0;
-
-          querySnapshot.forEach((documentSnapshot) => {
-              totalCount++;
-              const b = documentSnapshot.data();
-              const docId = documentSnapshot.id; // ไอดีเอกสารใน Firebase
-
-              if (b.status === 'pending') pendingCount++;
-
-              let badgeClass = 'pending';
-              let badgeText = 'รอดำเนินการ';
-              if (b.status === 'confirmed') { badgeClass = 'confirmed'; badgeText = 'ยืนยันแล้ว'; }
-              if (b.status === 'cancelled') { badgeClass = 'cancelled'; badgeText = 'ยกเลิก'; }
-
-              const tr = document.createElement('tr');
-              tr.innerHTML = `
-                  <td><small style="color:var(--text-muted);">${b.date || '-'}</small></td>
-                  <td>
-                      <strong>${b.name}</strong><br>
-                      <span style="font-size:0.85rem; color:var(--text-muted);">${b.phone}</span><br>
-                      <a href="https://line.me/ti/p/~${b.lineid}" target="_blank" class="btn-action btn-line" style="margin-top:4px;"><i class="fa-brands fa-line"></i> ${b.lineid}</a>
-                  </td>
-                  <td>
-                      <strong>${b.car}</strong><br>
-                      <span style="font-size:0.85rem; color:var(--secondary);">${b.route}</span>
-                  </td>
-                  <td><strong>${b.price}</strong></td>
-                  <td>
-                      <select class="status-select" onchange="updateCloudStatus('${docId}', this.value)">
-                          <option value="pending" ${b.status === 'pending' ? 'selected' : ''}>🟡 รอดำเนินการ</option>
-                          <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>🟢 ยืนยันการจอง</option>
-                          <option value="cancelled" ${b.status === 'cancelled' ? 'selected' : ''}>🔴 ยกเลิก</option>
-                      </select>
-                  </td>
-                 <td>
-    <button class="btn-action btn-slip" onclick="openSlipModal('${b.slipBase64 || b.slipUrl || ''}')">
-        <i class="fa-solid fa-receipt"></i> ดูสลิป
-    </button>
-</td>
-                  <td>
-                      <button class="btn-action btn-delete" onclick="deleteCloudBooking('${docId}')">
-                          <i class="fa-solid fa-trash"></i> ลบ
-                      </button>
-                  </td>
-              `;
-              tbody.appendChild(tr);
-          });
-
-          // อัปเดตตัวเลขสถิติ
-          document.getElementById('total-bookings').textContent = totalCount;
-          document.getElementById('pending-bookings').textContent = pendingCount;
-          document.getElementById('total-deposit').textContent = (totalCount * 100).toLocaleString() + ' บาท';
-
-      } catch (e) {
-          console.error("Error loading bookings: ", e);
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red; padding:20px;">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
-      }
-  }
-
-  // 3. ฟังก์ชันอัปเดตสถานะบน Cloud
- window.updateCloudStatus = async function(docId, newStatus) {
-    try {
-        const docRef = doc(db, "bookings", docId);
-        
-        // 1. อัปเดตสถานะลง Firestore ก่อน
-        await updateDoc(docRef, { status: newStatus });
-
-        // 2. ถ้าแอดมินเปลี่ยนสถานะเป็น "ยืนยันการจอง" (confirmed) ให้ส่งเมลหาลูกค้าอัตโนมัติ
-        if (newStatus === 'confirmed') {
-            // ดึงข้อมูลเอกสารนั้นมาเพื่อเอาชื่อและอีเมลของลูกค้า
-            // (หรือถ้าในฟังก์ชันมีข้อมูลลูกค้ารวมอยู่แล้ว สามารถดึงมาใช้ได้เลย)
-            
-            const templateParams = {
-                to_name: "คุณลูกค้า", // หรือดึงชื่อจริงจากข้อมูลในตาราง
-                to_email: "อีเมลลูกค้า", // ดึงอีเมลจริงจากข้อมูลในตาราง
-                phone: "-",
-                car_type: "-",
-                route: "-",
-                price: "-",
-                booking_id: docId
-            };
-
-            await emailjs.send('service_bwg87un', 'YOUR_TEMPLATE_ID', templateParams);
-            console.log('Confirmation email sent to customer successfully!');
-        }
-
-        alert('อัปเดตสถานะและส่งอีเมลยืนยันสำเร็จ!');
-    } catch (e) {
-        console.error("Error updating status: ", e);
-        alert('ไม่สามารถอัปเดตสถานะได้');
-    }
-};
-
-  // 4. ฟังก์ชันลบข้อมูลบน Cloud
-  window.deleteCloudBooking = async function(docId) {
-      if (confirm('คุณต้องการลบรายการจองนี้ออกจากระบบ Cloud ใช่หรือไม่?')) {
-          try {
-              await deleteDoc(doc(db, "bookings", docId));
-              alert('ลบข้อมูลสำเร็จ!');
-              loadAdminBookings(); // Reload ตารางใหม่
-          } catch (e) {
-              console.error("Error deleting document: ", e);
-              alert('ไม่สามารถลบข้อมูลได้');
-          }
-      }
-  };
-
-  // เรียกใช้งานเมื่อเปิดหน้าแอดมิน
-  window.addEventListener('DOMContentLoaded', () => {
-      loadAdminBookings();
-  });
-</script>
-<!-- เรียกใช้งาน Firebase SDK และ EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="text/javascript">
        (function(){
-          emailjs.init("TLr-PYAljdYhpJqk9"); // Public Key ของคุณ
+            emailjs.init("TLr-PYAljdYhpJqk9");
        })();
     </script>
 
@@ -641,117 +624,152 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 1. ฟังก์ชันดึงข้อมูลการจองทั้งหมดจาก Firestore มาแสดงในตารางแอดมิน
+        let allBookingsData = [];
+        let currentFilter = 'all';
+
         async function loadAdminBookings() {
             const tbody = document.getElementById('booking-table-body');
-            const emptyState = document.getElementById('empty-state');
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">กำลังโหลดข้อมูลจาก Cloud...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--accent);"></i><br><span style="margin-top:10px; display:inline-block;">กำลังโหลดข้อมูลจาก Cloud...</span></td></tr>';
 
             try {
                 const querySnapshot = await getDocs(collection(db, "bookings"));
-                tbody.innerHTML = '';
-
-                if (querySnapshot.empty) {
-                    emptyState.style.display = 'block';
-                    document.getElementById('total-bookings').textContent = '0';
-                    document.getElementById('pending-bookings').textContent = '0';
-                    document.getElementById('total-deposit').textContent = '0 บาท';
-                    return;
-                }
-
-                emptyState.style.display = 'none';
-                let totalCount = 0;
-                let pendingCount = 0;
+                allBookingsData = [];
 
                 querySnapshot.forEach((documentSnapshot) => {
-                    totalCount++;
-                    const b = documentSnapshot.data();
-                    const docId = documentSnapshot.id;
-
-                    if (b.status === 'pending') pendingCount++;
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><small style="color:var(--text-muted);">${b.date || '-'}</small></td>
-                        <td>
-                            <strong>${b.name}</strong><br>
-                            <span style="font-size:0.85rem; color:var(--text-muted);">${b.phone}</span><br>
-                            <a href="https://line.me/ti/p/~${b.lineid}" target="_blank" class="btn-action btn-line" style="margin-top:4px;"><i class="fa-brands fa-line"></i> ${b.lineid}</a>
-                        </td>
-                        <td>
-                            <strong>${b.carType || b.car}</strong><br>
-                            <span style="font-size:0.85rem; color:var(--secondary);">${b.route}</span>
-                        </td>
-                        <td><strong>${typeof b.price === 'number' ? b.price.toLocaleString() + ' THB' : b.price}</strong></td>
-                        <td>
-                            <select class="status-select" onchange="updateCloudStatus('${docId}', this.value)">
-                                <option value="pending" ${b.status === 'pending' ? 'selected' : ''}>🟡 รอดำเนินการ</option>
-                                <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>🟢 ยืนยันการจอง</option>
-                                <option value="cancelled" ${b.status === 'cancelled' ? 'selected' : ''}>🔴 ยกเลิก</option>
-                            </select>
-                        </td>
-                        <td>
-                            <button class="btn-action btn-slip" onclick="openSlipModal('${b.slipBase64 || b.slipUrl || ''}')">
-                                <i class="fa-solid fa-receipt"></i> ดูสลิป
-                            </button>
-                        </td>
-                        <td>
-                            <button class="btn-action btn-delete" onclick="deleteCloudBooking('${docId}')">
-                                <i class="fa-solid fa-trash"></i> ลบ
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
+                    allBookingsData.push({
+                        id: documentSnapshot.id,
+                        ...documentSnapshot.data()
+                    });
                 });
 
-                document.getElementById('total-bookings').textContent = totalCount;
-                document.getElementById('pending-bookings').textContent = pendingCount;
-                document.getElementById('total-deposit').textContent = (totalCount * 100).toLocaleString() + ' บาท';
+                renderTable();
 
             } catch (e) {
                 console.error("Error loading bookings: ", e);
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red; padding:20px;">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red; padding:30px;">เกิดข้อผิดพลาดในการโหลดข้อมูลจากระบบ Cloud</td></tr>';
             }
         }
 
-        // 2. ฟังก์ชันอัปเดตสถานะบน Cloud และส่งอีเมลอัตโนมัติเมื่อเลือก "confirmed"
+        function renderTable() {
+            const tbody = document.getElementById('booking-table-body');
+            const emptyState = document.getElementById('empty-state');
+            tbody.innerHTML = '';
+
+            const filteredData = allBookingsData.filter(b => {
+                if (currentFilter === 'all') return true;
+                return b.status === currentFilter;
+            });
+
+            if (filteredData.length === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+
+            let pendingCount = 0;
+            allBookingsData.forEach(b => {
+                if (b.status === 'pending') pendingCount++;
+            });
+
+            document.getElementById('badge-pending').textContent = pendingCount;
+
+            filteredData.forEach((b) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><small style="color:var(--text-muted); font-weight: 600;">${b.date || '-'}</small></td>
+                    <td>
+                        <strong style="color: var(--primary);">${b.name || 'ไม่ระบุชื่อ'}</strong><br>
+                        <span style="font-size:0.85rem; color:var(--text-muted);">${b.phone || '-'}</span><br>
+                        ${b.lineid ? `<a href="https://line.me/ti/p/~${b.lineid}" target="_blank" class="btn-action btn-line" style="margin-top:6px;"><i class="fa-brands fa-line"></i> ${b.lineid}</a>` : ''}
+                    </td>
+                    <td>
+                        <strong style="color: var(--primary);">${b.carType || b.car || 'รถแท็กซี่'}</strong><br>
+                        <span style="font-size:0.85rem; color:var(--accent); font-weight:600;">${b.route || '-'}</span>
+                    </td>
+                    <td><strong style="color: var(--primary);">${typeof b.price === 'number' ? b.price.toLocaleString() + ' THB' : (b.price || '-')}</strong></td>
+                    <td>
+                        <select class="status-select" onchange="updateCloudStatus('${b.id}', this.value)">
+                            <option value="pending" ${b.status === 'pending' ? 'selected' : ''}>🟡 รอดำเนินการ</option>
+                            <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>🟢 ยืนยันแล้ว</option>
+                            <option value="cancelled" ${b.status === 'cancelled' ? 'selected' : ''}>🔴 ยกเลิก</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button class="btn-action btn-slip" onclick="openSlipModal('${b.slipBase64 || b.slipUrl || ''}')">
+                            <i class="fa-solid fa-receipt"></i> ดูสลิป
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn-action btn-delete" onclick="deleteCloudBooking('${b.id}')">
+                            <i class="fa-solid fa-trash"></i> ลบ
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // อัปเดตสถิติตัวเลขภาพรวม (คำนวณมัดจำเคสละ 400 บาท)
+            document.getElementById('total-bookings').textContent = allBookingsData.length;
+            document.getElementById('pending-bookings').textContent = pendingCount;
+            document.getElementById('total-deposit').textContent = (allBookingsData.length * 400).toLocaleString() + ' บาท';
+        }
+
+        // ฟังก์ชันสลับมุมมองหน้าแอดมินตามเมนูด้านข้าง
+        window.switchView = function(viewType, element) {
+            currentFilter = viewType;
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            element.classList.add('active');
+
+            const titleElem = document.getElementById('view-title');
+            if (viewType === 'all') {
+                titleElem.innerHTML = '<i class="fa-solid fa-chart-line" style="color: var(--accent);"></i> รายการจองทั้งหมดในระบบ';
+            } else if (viewType === 'pending') {
+                titleElem.innerHTML = '<i class="fa-solid fa-clock-rotate-left" style="color: #f59e0b;"></i> รายการจอง: รอดำเนินการ';
+            } else if (viewType === 'confirmed') {
+                titleElem.innerHTML = '<i class="fa-solid fa-circle-check" style="color: #10b981;"></i> รายการจอง: ยืนยันแล้ว';
+            } else if (viewType === 'cancelled') {
+                titleElem.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i> รายการจอง: ยกเลิก';
+            }
+
+            renderTable();
+        };
+
+        // ฟังก์ชันอัปเดตสถานะบน Cloud และส่งอีเมลยืนยันอัตโนมัติผ่าน EmailJS
         window.updateCloudStatus = async function(docId, newStatus) {
             try {
                 const docRef = doc(db, "bookings", docId);
-                
-                // อัปเดตสถานะลง Firestore ก่อน
                 await updateDoc(docRef, { status: newStatus });
 
-                // ถ้าแอดมินเปลี่ยนสถานะเป็น "ยืนยันการจอง" (confirmed) ให้ดึงข้อมูลมาส่งเมล
                 if (newStatus === 'confirmed') {
                     const docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
                         const data = docSnap.data();
+                        if (data.email) {
+                            const templateParams = {
+                                to_name: data.name,
+                                to_email: data.email,
+                                phone: data.phone || '-',
+                                car_type: data.carType || data.car || '-',
+                                route: data.route || '-',
+                                price: typeof data.price === 'number' ? data.price.toLocaleString() + " THB" : (data.price || '-'),
+                                booking_id: docId
+                            };
 
-                        const templateParams = {
-                            to_name: data.name,
-                            to_email: data.email,
-                            phone: data.phone,
-                            car_type: data.carType || data.car,
-                            route: data.route,
-                            price: typeof data.price === 'number' ? data.price.toLocaleString() + " THB" : data.price,
-                            booking_id: docId
-                        };
-
-                        // ส่งอีเมลผ่าน EmailJS ด้วย Template ID ที่ถูกต้อง
-                        await emailjs.send('service_bwg87un', 'template_cd0p4xa', templateParams);
-                        console.log('Confirmation email sent successfully!');
+                            await emailjs.send('service_bwg87un', 'template_cd0p4xa', templateParams);
+                            console.log('Confirmation email sent successfully!');
+                        }
                     }
                 }
 
-                alert('อัปเดตสถานะและส่งอีเมลยืนยันสำเร็จ!');
+                alert('อัปเดตสถานะสำเร็จ!');
+                loadAdminBookings();
             } catch (e) {
                 console.error("Error updating status or sending email: ", e);
-                alert('อัปเดตสถานะสำเร็จ แต่เกิดข้อผิดพลาดในการส่งอีเมล');
+                alert('อัปเดตสถานะสำเร็จ แต่อาจเกิดข้อผิดพลาดในการส่งอีเมล');
             }
         };
 
-        // 3. ฟังก์ชันลบข้อมูลบน Cloud
+        // ฟังก์ชันลบข้อมูลบน Cloud
         window.deleteCloudBooking = async function(docId) {
             if (confirm('คุณต้องการลบรายการจองนี้ออกจากระบบ Cloud ใช่หรือไม่?')) {
                 try {
@@ -765,11 +783,30 @@
             }
         };
 
+        // ฟังก์ชันเปิด/ปิด Modal สลิป
+        window.openSlipModal = function(imgSrc) {
+            const modalImg = document.getElementById('modalSlipImg');
+            if (imgSrc && imgSrc !== 'undefined' && imgSrc !== '') {
+                modalImg.src = imgSrc;
+            } else {
+                modalImg.src = 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=400&q=80';
+            }
+            document.getElementById('slipModal').style.display = 'flex';
+        };
+
+        window.closeSlipModal = function() {
+            document.getElementById('slipModal').style.display = 'none';
+        };
+
+        window.logoutAdmin = function() {
+            if (confirm('คุณต้องการออกจากระบบแอดมินใช่หรือไม่?')) {
+                window.location.href = "index.html";
+            }
+        };
+
         window.addEventListener('DOMContentLoaded', () => {
             loadAdminBookings();
         });
     </script>
-    <script src="mobile-switcher.js"></script>
 </body>
-
 </html>
